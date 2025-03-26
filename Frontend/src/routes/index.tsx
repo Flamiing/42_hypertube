@@ -11,9 +11,7 @@ import Oauth from "../pages/Callbacks/Oauth";
 import ConfirmEmail from "../pages/Callbacks/ConfirmEmail";
 import Browse from "../pages/Browse";
 import PublicProfile from "../pages/PublicProfile";
-import Events from "../pages/Events";
 import ResetPassword from "../pages/Callbacks/ResetPassword";
-import Chat from "../pages/Chat";
 
 const protectedRoutes = {
 	profileEdit: {
@@ -32,14 +30,6 @@ const protectedRoutes = {
 			</ProtectedRoute>
 		),
 	},
-	events: {
-		path: "events",
-		element: (
-			<ProtectedRoute>
-				<Events />
-			</ProtectedRoute>
-		),
-	},
 	profile: {
 		path: "profile",
 		element: (
@@ -53,14 +43,6 @@ const protectedRoutes = {
 		element: (
 			<ProtectedRoute>
 				<PublicProfile />
-			</ProtectedRoute>
-		),
-	},
-	chat: {
-		path: "chat",
-		element: (
-			<ProtectedRoute>
-				<Chat />
 			</ProtectedRoute>
 		),
 	},

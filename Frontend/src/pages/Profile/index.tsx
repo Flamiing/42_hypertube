@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import ProfileHeader from "./ProfileHeader";
-import ProfileDetails from "./ProfileDetails";
 import Info from "../../components/profile/Info";
 import Images from "../../components/profile/Images";
 import LikesAndViews from "./LikesAndViews";
@@ -42,17 +41,8 @@ const index = () => {
 		<main className="flex flex-1 justify-center items-center flex-col">
 			<section className="w-full bg-gradient-to-br from-orange-200 to-purple-200 flex flex-col items-center gap-12">
 				<ProfileHeader user={profile} />
-				<ProfileDetails user={profile} />
-				<section className="flex flex-wrap flex-row w-fit items-center justify-center mb-10 gap-7 px-4">
-					<Images user={profile} privateProfile={true} />
-					<LikesAndViews
-						profileLikes={profile.likes}
-						profileViews={profile.views}
-					/>
-				</section>
 			</section>
 			<Info user={profile} />
-			<TagSection tags={profile.tags} />
 		</main>
 	);
 };

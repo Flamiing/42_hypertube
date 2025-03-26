@@ -91,12 +91,6 @@ const Face = ({ user, onChange, onImagesUpdate, oauth }: FaceProps) => {
 								</label>
 							</div>
 						</div>
-						<div className="mt-5">
-							<Images
-								user={user}
-								onImagesUpdate={onImagesUpdate}
-							/>
-						</div>
 					</div>
 					<div className="flex flex-col gap-2">
 						<div className="flex gap-2 lg:gap-5 flex-wrap">

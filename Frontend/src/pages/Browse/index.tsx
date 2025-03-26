@@ -4,7 +4,6 @@ import { useProfile } from "../../hooks/PageData/useProfile";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
 import SortSection from "./SortSection";
-import UserCard from "./UserCard";
 import FilterSection from "./FilterSection";
 import calculateAge from "../../utils/calculateAge";
 
@@ -221,13 +220,6 @@ const index = () => {
 							</h2>
 						)
 					)}
-					{filteredUsers.map((user) => (
-						<UserCard
-							key={user.id}
-							user={user}
-							distance={userDistances[user.id]}
-						/>
-					))}
 				</div>
 			</section>
 		</main>

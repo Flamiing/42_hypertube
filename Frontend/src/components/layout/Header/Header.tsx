@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useBreakpoints } from "../../../hooks/useBreakpoints";
 import { useAuth } from "../../../context/AuthContext";
-import Notifications from "./Notifications";
 
 const Header: React.FC = () => {
 	const { isAuthenticated, user, logout } = useAuth();
@@ -52,7 +51,6 @@ const Header: React.FC = () => {
 	// User menu component for desktop
 	const UserMenu = () => (
 		<div className="flex items-center gap-4">
-			<Notifications />
 			<div className="flex items-center gap-2">
 				<span className="text-primary font-medium">
 					{user?.username}
@@ -97,7 +95,7 @@ const Header: React.FC = () => {
 						}`}
 					>
 						<Link to="/" onClick={handleLinkClick}>
-							Matcha
+							Hypertube
 						</Link>
 					</h1>
 
@@ -113,16 +111,6 @@ const Header: React.FC = () => {
 									<Link to="/browse">
 										<button className="text-font-main font-medium btn whitespace-nowrap text-base px-6 py-2 rounded-full hover:bg-secondary-light transition-colors duration-300">
 											Browse
-										</button>
-									</Link>
-									<Link to="/events">
-										<button className="text-font-main font-medium btn whitespace-nowrap text-base px-6 py-2 rounded-full hover:bg-secondary-light transition-colors duration-300">
-											Events
-										</button>
-									</Link>
-									<Link to="/chat">
-										<button className="text-font-main font-medium btn whitespace-nowrap text-base px-6 py-2 rounded-full hover:bg-secondary-light transition-colors duration-300">
-											Chats
 										</button>
 									</Link>
 									<Link to="/profile">
@@ -143,7 +131,6 @@ const Header: React.FC = () => {
 					{/* Mobile menu button */}
 					{(isMobile || isTablet) && (
 						<div className="flex items-center gap-4">
-							{isAuthenticated && user && <Notifications />}
 							<button
 								onClick={toggleMenu}
 								className="flex rounded-full p-2 bg-white w-10 h-10 justify-center items-center"
@@ -214,19 +201,6 @@ const Header: React.FC = () => {
 									>
 										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
 											Browse
-										</button>
-									</Link>
-									<Link
-										to="/events"
-										onClick={handleLinkClick}
-									>
-										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
-											Events
-										</button>
-									</Link>
-									<Link to="/chat" onClick={handleLinkClick}>
-										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
-											Chats
 										</button>
 									</Link>
 									<Link
