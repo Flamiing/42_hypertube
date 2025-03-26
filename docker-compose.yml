@@ -7,7 +7,7 @@ services:
         volumes:
             - postgresql_volume:/var/lib/postgresql
         networks:
-            - matcha-network
+            - hypertube-network
         environment:
             POSTGRESQL_ROOT_PASSWORD: ${POSTGRESQL_ROOT_PASSWORD}
             POSTGRESQL_USER: ${POSTGRESQL_USER}
@@ -38,7 +38,7 @@ services:
             - ./Backend:/backend
             - ./uploads:/uploads
         networks:
-            - matcha-network
+            - hypertube-network
         environment:
             TZ: ${TIMEZONE}
         depends_on:
@@ -57,7 +57,7 @@ services:
         volumes:
             - ./Frontend:/Frontend
         networks:
-            - matcha-network
+            - hypertube-network
         environment:
             TZ: ${TIMEZONE}
         env_file: .env
@@ -75,5 +75,5 @@ volumes:
             o: "bind"
             device: "${POSTGRESQL_VOLUME_PATH}"
 networks:
-    matcha-network:
+    hypertube-network:
         driver: bridge

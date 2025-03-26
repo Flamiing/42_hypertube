@@ -5,11 +5,11 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				primary: "#FA8072", // Salmon
-				"primary-monochromatic": "#F85441",
-				secondary: "#72ECFA",
-				"secondary-light": "#5DADE2",
-				tertiary: "#9B59B6",
+				primary: "#3AB5C5", // Salmon
+				"primary-monochromatic": "#61C4D1",
+				secondary: "#3A70C5",
+				"secondary-light": "#759bd6",
+				tertiary: "#3AC58F",
 				"font-main": "#414B61",
 				"font-secondary": "#A5A5A5",
 				"background-main": "#F5F5F5",

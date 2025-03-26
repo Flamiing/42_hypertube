@@ -8,10 +8,10 @@ const MainHeader: React.FC = () => {
 			<div className="flex justify-center items-center flex-col gap-10">
 				<img src="/logo.png" alt="" className="max-w-40" />
 				<h1 className="lg:text-5xl text-2xl text-gray-8">
-					Welcome to Matcha!
+					Welcome to Hypertube!
 				</h1>
 				<p className="text-gray-5 text-lg">
-					Because, love too can be industrialized. ❤️
+					Video streaming webpage for torrents
 				</p>
 				<Link to="/profile">
 					<StyledButton value="Start Here" />

@@ -6,10 +6,8 @@ import { useUsers } from "../../hooks/PageData/useUsers";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../../components/common/Spinner";
 import ProfileHeader from "./ProfileHeader";
-import ProfileDetails from "./ProfileDetails";
 import Images from "../../components/profile/Images";
 import Info from "../../components/profile/Info";
-import TagSection from "../../components/profile/TagSection";
 import LikeButton from "../../components/profile/LikeButton";
 
 const index = () => {
@@ -97,7 +95,6 @@ const index = () => {
 					onProfileUpdate={handleProfileUpdate}
 					distance={distance}
 				/>
-				<ProfileDetails user={userProfile} />
 				<section className="flex flex-wrap flex-row w-fit items-center justify-center mb-10 gap-7 px-4">
 					<Images user={userProfile} />
 					<LikeButton

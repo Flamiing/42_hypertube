@@ -25,24 +25,6 @@ const Info: React.FC<InfoProps> = ({ user }) => {
 
 	return (
 		<section className="container max-w-4xl mx-auto pt-12 px-4 flex flex-col gap-6">
-			<div className="flex flex-col items-center space-y-8">
-				{user.gender && user.sexual_preference ? (
-					<div className="bg-gray-50 rounded-lg px-6 py-3 shadow-sm">
-						<div className="flex items-center gap-3 text-lg">
-							<span className="font-medium text-gray-900">
-								{capitalizeLetters(user.gender)}
-							</span>
-							<span className="text-gray-500 text-base">
-								looking for
-							</span>
-							<span className="font-medium text-gray-900">
-								{capitalizeLetters(preferenceDisplay)}
-							</span>
-						</div>
-					</div>
-				) : null}
-			</div>
-
 			{user.biography ? (
 				<div className="prose prose-gray max-w-2xl">
 					<h2 className="text-font-main text-xl mb-2">Biography</h2>

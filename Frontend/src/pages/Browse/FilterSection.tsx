@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import FormInput from "../../components/common/FormInput";
 import RegularButton from "../../components/common/RegularButton";
-import { ChevronDown } from "lucide-react";
-import TagSection from "../../components/common/TagSection";
-import { useTags } from "../../hooks/PageData/useTags";
 
 const FilterSection = ({ onFilterChange }) => {
-	const { tags, loading: tagsLoading } = useTags();
 	const [formData, setFormData] = useState({
 		"max-age": "",
 		"min-age": "",
@@ -128,20 +124,6 @@ const FilterSection = ({ onFilterChange }) => {
 									placeholder="Min fame rating"
 								/>
 							</div>
-						</div>
-
-						{/* Tags Section */}
-						<div className="space-y-2">
-							<label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-								<i className="fa fa-tags w-4 h-4 text-tertiary" />
-								Filter by Tags
-							</label>
-							<TagSection
-								availableTags={tags || []}
-								selectedTagIds={formData.tags}
-								onTagsChange={handleTagsChange}
-								isLoading={tagsLoading}
-							/>
 						</div>
 
 						{/* Filter button */}
