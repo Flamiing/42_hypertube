@@ -4,22 +4,12 @@ import fsExtra from 'fs-extra';
 
 // Local Imports:
 import userModel from '../Models/UserModel.js';
-import likesModel from '../Models/LikesModel.js';
-import userTagsModel from '../Models/UserTagsModel.js';
 import { validatePartialUser } from '../Schemas/userSchema.js';
 import getPublicUser from '../Utils/getPublicUser.js';
 import StatusMessage from '../Utils/StatusMessage.js';
 import { returnErrorWithNext, returnErrorStatus } from '../Utils/errorUtils.js';
-import imagesModel from '../Models/ImagesModel.js';
-import viewsHistoryModel from '../Models/ViewsHistoryModel.js';
-import { getTimestampWithTZ } from '../Utils/timeUtils.js';
-import { parseImages } from '../Utils/imagesUtils.js';
-import { getUserLikesAndBlocks } from '../Utils/userUtils.js';
-import Notifications from '../Sockets/Notifications.js';
 
 export default class UsersController {
-    static MAX_NUM_USER_IMAGES = 4;
-
     static async getAllUsers(req, res) {
         const users = await userModel.getAll();
         if (users) {
@@ -91,54 +81,9 @@ export default class UsersController {
                     .status(500)
                     .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
 
-            if (user.id !== req.session.user.id) {
-                const viewResult = await UsersController.saveView(
-                    res,
-                    user.id,
-                    req.session.user.id
-                );
-                if (!viewResult) return res;
-
-                const updateFameResult = await userModel.updateFame(
-                    user.id,
-                    publicUser
-                );
-                if (!updateFameResult)
-                    return res
-                        .status(500)
-                        .json({ msg: StatusMessage.QUERY_ERROR });
-            }
-
-            if (
-                !(await getUserLikesAndBlocks(
-                    res,
-                    req.session.user.id,
-                    publicUser
-                ))
-            )
-                return res;
-
             return res.json({ msg: publicUser });
         }
         return res.status(500).json({ msg: StatusMessage.QUERY_ERROR });
-    }
-
-    static async getImages(req, res) {
-        const { id } = req.params;
-
-        const reference = { user_id: id };
-        const imagesToParse = await imagesModel.getByReference(
-            reference,
-            false
-        );
-        if (!imagesToParse)
-            return res.status(500).json({ msg: StatusMessage.QUERY_ERROR });
-        if (imagesToParse.length === 0)
-            return res.status(404).json({ msg: StatusMessage.NO_IMAGES_FOUND });
-
-        const images = parseImages(id, imagesToParse);
-
-        return res.json({ msg: images });
     }
 
     static async getProfilePicture(req, res) {
@@ -169,9 +114,6 @@ export default class UsersController {
         const { id } = req.params;
         const { input, inputHasNoContent } = isValidData;
 
-        const tagsUpdateResult = await UsersController.updateTags(req, res);
-        if (!tagsUpdateResult) return res;
-
         let user = null;
         if (!inputHasNoContent) {
             user = await userModel.update({ input, id });
@@ -188,19 +130,6 @@ export default class UsersController {
         return res.json({ msg: privateUser });
     }
 
-    static async updateTags(req, res) {
-        const { id } = req.params;
-        const { tags } = req.body;
-
-        const tagsUpdateResult = await userTagsModel.updateUserTags(id, tags);
-        if (!tagsUpdateResult)
-            return returnErrorStatus(res, 500, StatusMessage.QUERY_ERROR);
-        if (tagsUpdateResult.length === 0)
-            return returnErrorStatus(res, 400, StatusMessage.INVALID_USER_TAG);
-
-        return true;
-    }
-
     static async validateData(req, res) {
         const validatedUser = await validatePartialUser(req.body);
         if (!validatedUser.success) {
@@ -208,10 +137,9 @@ export default class UsersController {
             return returnErrorStatus(res, 400, errorMessage);
         }
 
-        const { tags } = req.body;
         const input = validatedUser.data;
         const inputHasNoContent = Object.keys(input).length === 0;
-        if (inputHasNoContent && !tags)
+        if (inputHasNoContent)
             return returnErrorStatus(
                 res,
                 400,
@@ -320,86 +248,6 @@ export default class UsersController {
         }
     }
 
-    static async exceedsImageLimit(res, userId, numImagesUploaded) {
-        if (numImagesUploaded > UsersController.MAX_NUM_USER_IMAGES) {
-            res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
-            return true;
-        }
-
-        const numImagesDB = await imagesModel.countRecordsByReference({
-            user_id: userId,
-        });
-        if (numImagesDB === null) {
-            res.status(400).json({ msg: StatusMessage.QUERY_ERROR });
-            return true;
-        }
-
-        if (numImagesDB === UsersController.MAX_NUM_USER_IMAGES) {
-            res.status(400).json({ msg: StatusMessage.EXCEEDS_IMAGE_LIMIT_DB });
-            return true;
-        }
-
-        if (
-            numImagesDB + numImagesUploaded >
-            UsersController.MAX_NUM_USER_IMAGES
-        ) {
-            res.status(400).json({ msg: StatusMessage.EXCEEDS_IMAGE_LIMIT });
-            return true;
-        }
-
-        return false;
-    }
-
-    static async saveImageToDB(res, userId, imageId, imagePath) {
-        const input = {
-            id: imageId,
-            user_id: userId,
-            image_path: imagePath,
-        };
-
-        const result = await imagesModel.create({ input });
-        if (!result || result.length === 0)
-            return returnErrorStatus(res, 500, StatusMessage.QUERY_ERROR);
-
-        return true;
-    }
-
-    static async saveView(res, viewedId, viewedById) {
-        const reference = {
-            viewed_by: viewedById,
-            viewed: viewedId,
-        };
-        const view = await viewsHistoryModel.getByReference(reference, true);
-        if (!view)
-            return returnErrorStatus(
-                res,
-                500,
-                StatusMessage.INTERNAL_SERVER_ERROR
-            );
-
-        let input = {
-            viewed_by: viewedById,
-            viewed: viewedId,
-            time: getTimestampWithTZ(),
-        };
-
-        if (view && view.length !== 0) {
-            const { id } = view;
-            const updateResult = await viewsHistoryModel.update({ input, id });
-            if (!updateResult || updateResult.length === 0)
-                return returnErrorStatus(res, 500, StatusMessage.QUERY_ERROR);
-            await Notifications.sendNotification('view', viewedId, viewedById);
-            return true;
-        }
-
-        const viewUpdateResult = await viewsHistoryModel.create({ input });
-        if (!viewUpdateResult || viewUpdateResult.length === 0)
-            return returnErrorStatus(res, 500, StatusMessage.QUERY_ERROR);
-
-        await Notifications.sendNotification('view', viewedId, viewedById);
-        return true;
-    }
-
     static async getPrivateUser(res, user) {
         const privateUser = await getPublicUser(user);
         if (!privateUser)
@@ -409,24 +257,6 @@ export default class UsersController {
                 StatusMessage.INTERNAL_SERVER_ERROR
             );
 
-        const likes = await likesModel.getUserLikes(user.id);
-        if (!likes)
-            return returnErrorStatus(
-                res,
-                500,
-                StatusMessage.INTERNAL_SERVER_ERROR
-            );
-
-        const views = await viewsHistoryModel.getUserViewsHistory(user.id);
-        if (!views)
-            return returnErrorStatus(
-                res,
-                500,
-                StatusMessage.INTERNAL_SERVER_ERROR
-            );
-
-        privateUser.likes = likes;
-        privateUser.views = views;
         privateUser.email = user.email;
 
         return privateUser;
