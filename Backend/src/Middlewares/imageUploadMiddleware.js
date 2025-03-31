@@ -27,5 +27,5 @@ export const imageUploadMiddleware = () => {
 
     return multer({
         storage: storage,
-    }).array('files', 4);
+    }).array('files', 1);
 };

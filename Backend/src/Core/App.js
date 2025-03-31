@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 
 // Local Imports:
-import SocketHandler from '../Sockets/SocketHandler.js';
+import SocketHandler from '../Sockets/SocketHandler.js'; // TODO: Remove if not used by the end of the project
 
 // Middleware Imports:
 import { corsMiddleware } from '../Middlewares/corsMiddleware.js';
@@ -18,21 +18,12 @@ import { checkAuthStatusMiddleware } from '../Middlewares/checkAuthStatusMiddlew
 // Router Imports:
 import AuthRouter from '../Routes/AuthRouter.js';
 import UsersRouter from '../Routes/UsersRouter.js';
-import TagsRouter from '../Routes/TagsRouter.js';
-import LikesRouter from '../Routes/LikesRouter.js';
-import MatchesRouter from '../Routes/MatchesRouter.js';
-import EventsRouter from '../Routes/EventsRouter.js';
-import BrowserRouter from '../Routes/BrowserRouter.js';
-import DistanceRouter from '../Routes/DistanceRouter.js';
-import ChatRouter from '../Routes/ChatRouter.js';
-import MediaRouter from '../Routes/MediaRouter.js';
-import NotificationsRouter from '../Routes/NotificationsRouter.js';
 
 export default class App {
     constructor() {
         this.app = express();
         this.server = createServer(this.app);
-        this.socketHandler = SocketHandler.getInstance(this.server);
+        //this.socketHandler = SocketHandler.getInstance(this.server); // TODO: Remove if not used by the end of the project
         this.HOST = process.env.API_HOST ?? 'localhost';
         this.PORT = process.env.API_PORT ?? 3001;
         this.API_VERSION = process.env.API_VERSION;
@@ -43,9 +34,7 @@ export default class App {
             `${this.API_PREFIX}/auth/status`,
             `${this.API_PREFIX}/auth/confirm`,
             `${this.API_PREFIX}/auth/password/reset`,
-            //`${this.API_PREFIX}/auth/password/change`,
             `${this.API_PREFIX}/auth/oauth`,
-            `${this.API_PREFIX}/tags`,
         ];
 
         this.#setupMiddleware();
@@ -76,26 +65,5 @@ export default class App {
     #setupRoutes() {
         this.app.use(`${this.API_PREFIX}/auth`, AuthRouter.createRouter());
         this.app.use(`${this.API_PREFIX}/users`, UsersRouter.createRouter());
-        this.app.use(`${this.API_PREFIX}/tags`, TagsRouter.createRouter());
-        this.app.use(`${this.API_PREFIX}/likes`, LikesRouter.createRouter());
-        this.app.use(`${this.API_PREFIX}/events`, EventsRouter.createRouter());
-        this.app.use(`${this.API_PREFIX}/chat`, ChatRouter.createRouter());
-        this.app.use(`${this.API_PREFIX}/media`, MediaRouter.createRouter());
-        this.app.use(
-            `${this.API_PREFIX}/notifications`,
-            NotificationsRouter.createRouter()
-        );
-        this.app.use(
-            `${this.API_PREFIX}/browser`,
-            BrowserRouter.createRouter()
-        );
-        this.app.use(
-            `${this.API_PREFIX}/matches`,
-            MatchesRouter.createRouter()
-        );
-        this.app.use(
-            `${this.API_PREFIX}/distance`,
-            DistanceRouter.createRouter()
-        );
     }
 }

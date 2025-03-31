@@ -3,8 +3,6 @@ import { Server } from 'socket.io';
 
 // Local Imports:
 import { socketSessionMiddleware } from '../Middlewares/socketSessionMiddleware.js';
-import SocketController from './SocketController.js';
-import StatusMessage from '../Utils/StatusMessage.js';
 import { authStatusSocketMiddleware } from '../Middlewares/authStatusSocketMiddleware.js';
 import { handleError } from '../Utils/socketUtils.js';
 
@@ -18,7 +16,7 @@ class SocketHandler {
                 credentials: true,
             },
         });
-        this.PROTECTED_EVENTS = ['send-text-message', 'send-audio-message'];
+        this.PROTECTED_EVENTS = [];
 
         this.#setupConnectionMiddleware();
         this.#handleSocket();
@@ -49,51 +47,9 @@ class SocketHandler {
         this.io.on('connection', async (socket) => {
             console.info(`INFO: New socket connected: ${socket.id}`);
 
-            if (socket.request.session.user) {
-                const userStatusResult =
-                    await SocketController.changeUserStatus(socket, 'online');
-                if (!userStatusResult)
-                    return handleError(
-                        socket,
-                        StatusMessage.ERROR_CHANGING_USER_STATUS
-                    );
-            }
-
             this.#setupSocketMiddleware(socket);
 
-            socket.on(
-                'send-text-message',
-                async (data) =>
-                    await SocketController.sendTextMessage(
-                        this.io,
-                        socket,
-                        data
-                    )
-            );
-
-            socket.on(
-                'send-audio-message',
-                async (data) =>
-                    await SocketController.sendAudioMessage(
-                        this.io,
-                        socket,
-                        data
-                    )
-            );
-
             socket.on('disconnect', async () => {
-                if (socket.request.session.user) {
-                    const userStatusResult =
-                        await SocketController.changeUserStatus(
-                            socket,
-                            'offline'
-                        );
-                    if (!userStatusResult)
-                        return handleError(
-                            socket,
-                            StatusMessage.ERROR_CHANGING_USER_STATUS
-                        );
-                }
                 console.info(`INFO: Socket disconnected: ${socket.id}`);
             });
         });
