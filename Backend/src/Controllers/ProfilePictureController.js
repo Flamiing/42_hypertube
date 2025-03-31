@@ -44,7 +44,10 @@ export default class ProfilePictureController {
                 );
 
             const deleteResult =
-                await ProfilePictureController.deletePreviousProfilePicture(res, id);
+                await ProfilePictureController.deletePreviousProfilePicture(
+                    res,
+                    id
+                );
             if (!deleteResult)
                 return returnErrorWithNext(
                     res,
