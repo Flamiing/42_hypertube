@@ -3,6 +3,7 @@ import { Router } from 'express';
 
 // Local Imports:
 import UsersController from '../Controllers/UsersController.js';
+import ProfilePictureController from '../Controllers/ProfilePictureController.js';
 import { checkValidUserIdMiddleware } from '../Middlewares/checkValidUserIdMiddleware.js';
 import { imageUploadMiddleware } from '../Middlewares/imageUploadMiddleware.js';
 import { imagesValidationMiddleware } from '../Middlewares/imagesValidationMiddleware.js';
@@ -16,7 +17,7 @@ export default class UsersRouter {
         router.get('/', UsersController.getAllUsers);
         router.get('/me', UsersController.getMe);
         router.get('/:username', UsersController.getUserProfile);
-        router.get('/:id/profile-picture', UsersController.getProfilePicture);
+        router.get('/:id/profile-picture', ProfilePictureController.getProfilePicture);
 
         // PATCH:
         router.patch(
@@ -31,7 +32,7 @@ export default class UsersRouter {
             checkValidUserIdMiddleware(),
             imageUploadMiddleware(),
             imagesValidationMiddleware(),
-            UsersController.changeProfilePicture,
+            ProfilePictureController.changeProfilePicture,
             removeImageOnFailureMiddleware
         );
 
