@@ -23,9 +23,6 @@ const disallowedUsernames = [
     'blocked-users',
 ];
 
-const MIN_AGE = Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000;
-const MAX_AGE = Date.now() - 3124135674000;
-
 const userSchema = z.object({
     email: z
         .string({
@@ -132,50 +129,11 @@ const userSchema = z.object({
                 message: 'Password fails security requirements.',
             }
         ),
-    age: z
-        .number({ invalid_type_error: 'Invalid age.' })
-        .max(MIN_AGE, 'Age must be at least 18.')
-        .min(MAX_AGE, 'Age must not be greater than 99.')
-        .optional(),
     biography: z
         .string({
             invalid_type_error: 'Invalid biography.',
         })
         .max(500, 'Biography must be 500 characters or fewer.')
-        .optional(),
-    location: z.object(
-        {
-            latitude: z
-                .number()
-                .min(-90, { message: 'Latitude must be between -90 and 90' })
-                .max(90, { message: 'Latitude must be between -90 and 90' }),
-            longitude: z
-                .number()
-                .min(-180, {
-                    message: 'Longitude must be between -180 and 180',
-                })
-                .max(180, {
-                    message: 'Longitude must be between -180 and 180',
-                }),
-            allows_location: z.boolean({
-                invalid_type_error: 'Invalid location.',
-            }),
-        },
-        {
-            required_error: 'Location is required.',
-        }
-    ),
-    last_online: z.string().optional(),
-    is_online: z.string().optional(),
-    gender: z
-        .enum(['male', 'female'], {
-            errorMap: () => ({ message: 'Invalid gender.' }),
-        })
-        .optional(),
-    sexual_preference: z
-        .enum(['male', 'female', 'bisexual'], {
-            errorMap: () => ({ message: 'Invalid sexual preference.' }),
-        })
         .optional(),
 });
 
