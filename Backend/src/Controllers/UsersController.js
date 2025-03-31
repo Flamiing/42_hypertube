@@ -141,26 +141,6 @@ export default class UsersController {
         return res.json({ msg: images });
     }
 
-    static async getImageById(req, res) {
-        const { imageId } = req.params;
-
-        const id = imageId;
-
-        const result = await imagesModel.getById({ id });
-        if (!result)
-            return res.status(500).json({ msg: StatusMessage.QUERY_ERROR });
-        if (result.length === 0)
-            return res.status(404).json({ msg: StatusMessage.IMAGE_NOT_FOUND });
-
-        const image = result.image_path;
-        const imagePath = path.join(image);
-        res.sendFile(imagePath, (error) => {
-            if (error) {
-                res.status(404).json({ msg: StatusMessage.IMAGE_NOT_FOUND });
-            }
-        });
-    }
-
     static async getProfilePicture(req, res) {
         const { id } = req.params;
         const user = await userModel.getById({ id });
@@ -340,52 +320,6 @@ export default class UsersController {
         }
     }
 
-    static async uploadImages(req, res, next) {
-        const { API_HOST, API_PORT, API_VERSION } = process.env;
-
-        const { id } = req.params;
-
-        // Check if the user has space for the images
-        const exceedsImageLimit = await UsersController.exceedsImageLimit(
-            res,
-            id,
-            req.files.length
-        );
-        if (exceedsImageLimit)
-            return returnErrorWithNext(
-                res,
-                next,
-                res.statusCode,
-                res.responseData.body
-            );
-
-        let images = [];
-        for (const image of req.files) {
-            const imageId = path.parse(image.filename).name;
-            const imageURL = `http://${API_HOST}:${API_PORT}/api/v${API_VERSION}/users/${id}/images/${imageId}`;
-            const imageInfo = {
-                imageId: imageId,
-                imageURL: imageURL,
-            };
-            images.push(imageInfo);
-            const result = await UsersController.saveImageToDB(
-                res,
-                id,
-                imageId,
-                image.path
-            );
-            if (!result)
-                return returnErrorWithNext(
-                    res,
-                    next,
-                    res.statusCode,
-                    res.responseData.body
-                );
-        }
-
-        return res.json({ msg: images });
-    }
-
     static async exceedsImageLimit(res, userId, numImagesUploaded) {
         if (numImagesUploaded > UsersController.MAX_NUM_USER_IMAGES) {
             res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
@@ -428,39 +362,6 @@ export default class UsersController {
             return returnErrorStatus(res, 500, StatusMessage.QUERY_ERROR);
 
         return true;
-    }
-
-    static async deleteImage(req, res) {
-        const { imageId } = req.params;
-
-        const id = imageId;
-
-        const image = await imagesModel.getById({ id });
-        if (!image)
-            return res
-                .json(500)
-                .json({ msg: StatusMessage.ERROR_DELETING_IMAGE });
-        if (image.length === 0)
-            return res.status(404).json({ msg: StatusMessage.IMAGE_NOT_FOUND });
-
-        const deleteResult = await imagesModel.delete({ id });
-        if (!deleteResult)
-            return res
-                .status(400)
-                .json({ msg: StatusMessage.ERROR_DELETING_IMAGE });
-
-        try {
-            await fsExtra.remove(image.image_path);
-            console.info(
-                `Image with path '${image.image_path}' has been removed successfully!`
-            );
-            return res.json({ msg: StatusMessage.IMAGE_DELETED_SUCCESSFULLY });
-        } catch (error) {
-            console.error(`Error deleting file ${image.image_path}: ${error}`);
-            return res
-                .json(500)
-                .json({ msg: StatusMessage.ERROR_DELETING_IMAGE });
-        }
     }
 
     static async saveView(res, viewedId, viewedById) {
