@@ -54,8 +54,8 @@ export default class OAuthController {
             validatedUser.data.active_account = true;
             validatedUser.data.oauth = true;
 
-            if (await OAuthController.loginOAuth(res, validatedUser))
-                return res;
+            const isUserRegistered = await OAuthController.loginOAuth(res, validatedUser);
+            if (isUserRegistered || isUserRegistered === null) return res;
             return await registerUser(res, validatedUser, true);
         } catch (error) {
             console.error(
@@ -73,15 +73,14 @@ export default class OAuthController {
     }
 
     static async loginOAuth(res, validatedUser) {
-        const user = await userModel.getByReference(
-            {
-                username: validatedUser.data.username,
-            },
-            true
-        );
+        const reference = {
+            username: validatedUser.data.username
+        }
+
+        const user = await userModel.getByReference(reference, true);
         if (!user) {
             res.status(500).json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
-            return true;
+            return null;
         }
         if (user.length === 0) return false;
 
