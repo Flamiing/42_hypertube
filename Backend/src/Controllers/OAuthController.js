@@ -10,8 +10,14 @@ import {
     checkAuthStatus,
 } from '../Utils/authUtils.js';
 import { validatePartialUser } from '../Schemas/userSchema.js';
+import { returnErrorStatus } from '../Utils/errorUtils.js';
 
 export default class OAuthController {
+    static OAUTH_STRATEGIES = {
+        google: OAuthController.getGoogleOAuthUserData,
+        '42': OAuthController.get42OAuthUserData
+    }
+
     static async handleOAuth(req, res) {
         const authStatus = await checkAuthStatus(req);
         if (authStatus.isAuthorized)
@@ -19,9 +25,26 @@ export default class OAuthController {
                 .status(400)
                 .json({ msg: StatusMessage.ALREADY_LOGGED_IN });
 
-        const { code, location } = req.body;
+        const { provider } = req.params;
+        if (!provider || !(provider in OAuthController.OAUTH_STRATEGIES))
+            return res.status(404).json({ msg: StatusMessage.OAUTH_PROVIDER_NOT_FOUND })
 
+        const data = await OAuthController.OAUTH_STRATEGIES[provider](req, res);
+        if (!data) return res;
+
+        const validatedUser = await validatePartialUser(data);
+        validatedUser.data.active_account = true;
+        validatedUser.data.oauth = true;
+
+        const isUserRegistered = await OAuthController.loginOAuth(res, validatedUser);
+        if (isUserRegistered || isUserRegistered === null) return res;
+        return await registerUser(res, validatedUser, true);
+    }
+
+    static async get42OAuthUserData(req, res) {
         const { OAUTH_CLIENT_ID, OAUTH_SECRET_KEY } = process.env;
+
+        const { code } = req.body;
 
         try {
             const tokenResponse = await axios.post(
@@ -46,32 +69,18 @@ export default class OAuthController {
                 email: userOAuth.data.email,
                 username: userOAuth.data.login,
                 first_name: userOAuth.data.first_name,
-                last_name: userOAuth.data.last_name,
-                location: location,
+                last_name: userOAuth.data.last_name
             };
 
-            const validatedUser = await validatePartialUser(data);
-            validatedUser.data.active_account = true;
-            validatedUser.data.oauth = true;
-
-            const isUserRegistered = await OAuthController.loginOAuth(
-                res,
-                validatedUser
-            );
-            if (isUserRegistered || isUserRegistered === null) return res;
-            return await registerUser(res, validatedUser, true);
+            return data;
         } catch (error) {
             console.error(
                 'ERROR:',
                 error.response?.data?.error_description ?? error
             );
             if (error.response?.status === 401)
-                return res
-                    .status(401)
-                    .json({ msg: error.response.data.error_description });
-            return res
-                .status(500)
-                .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
+                return returnErrorStatus(res, 401, error.response.data.error_description)
+            return returnErrorStatus(res, 500, StatusMessage.INTERNAL_SERVER_ERROR)
         }
     }
 
