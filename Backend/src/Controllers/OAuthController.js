@@ -15,7 +15,7 @@ import { returnErrorStatus } from '../Utils/errorUtils.js';
 export default class OAuthController {
     static OAUTH_STRATEGIES = {
         google: OAuthController.getGoogleOAuthUserData,
-        '42': OAuthController.get42OAuthUserData,
+        42: OAuthController.get42OAuthUserData,
     };
 
     static async handleOAuth(req, res) {
@@ -52,8 +52,8 @@ export default class OAuthController {
         const { code } = req.body;
 
         try {
-            const tokenEndpoint = 'https://api.intra.42.fr/oauth/token'
-            const userInfoEndpoint = 'https://api.intra.42.fr/v2/me'
+            const tokenEndpoint = 'https://api.intra.42.fr/oauth/token';
+            const userInfoEndpoint = 'https://api.intra.42.fr/v2/me';
 
             const userInfo = await OAuthController.getUserInfo(
                 OAUTH_42_CLIENT_ID,
@@ -61,7 +61,7 @@ export default class OAuthController {
                 code,
                 tokenEndpoint,
                 userInfoEndpoint
-            )
+            );
 
             const data = {
                 email: userInfo.data.email,
@@ -92,12 +92,13 @@ export default class OAuthController {
 
     static async getGoogleOAuthUserData(req, res) {
         const { OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_SECRET_KEY } = process.env;
-        
+
         const { code } = req.body;
 
         try {
-            const tokenEndpoint = 'https://oauth2.googleapis.com/token'
-            const userInfoEndpoint = 'https://www.googleapis.com/oauth2/v2/userinfo'
+            const tokenEndpoint = 'https://oauth2.googleapis.com/token';
+            const userInfoEndpoint =
+                'https://www.googleapis.com/oauth2/v2/userinfo';
 
             const userInfo = await OAuthController.getUserInfo(
                 OAUTH_GOOGLE_CLIENT_ID,
@@ -105,19 +106,18 @@ export default class OAuthController {
                 code,
                 tokenEndpoint,
                 userInfoEndpoint
-            )
+            );
 
-            const username = userInfo.data.email.split('@')[0]
-
+            const username = userInfo.data.email.split('@')[0];
 
             const data = {
                 email: userInfo.data.email,
                 username: username,
                 first_name: userInfo.data.given_name,
-                last_name: userInfo.data.family_name
+                last_name: userInfo.data.family_name,
             };
 
-            console.log('TEST: ', data)
+            console.log('TEST: ', data);
 
             return data;
         } catch (error) {
@@ -139,17 +139,20 @@ export default class OAuthController {
         }
     }
 
-    static async getUserInfo(clientId, secretKey, code, tokenEndpoint, userInfoEndpoint) {
-        const tokenResponse = await axios.post(
-            tokenEndpoint,
-            {
-                grant_type: 'authorization_code',
-                client_id: clientId,
-                client_secret: secretKey,
-                code: code,
-                redirect_uri: process.env.CALLBACK_ROUTE,
-            }
-        );
+    static async getUserInfo(
+        clientId,
+        secretKey,
+        code,
+        tokenEndpoint,
+        userInfoEndpoint
+    ) {
+        const tokenResponse = await axios.post(tokenEndpoint, {
+            grant_type: 'authorization_code',
+            client_id: clientId,
+            client_secret: secretKey,
+            code: code,
+            redirect_uri: process.env.CALLBACK_ROUTE,
+        });
 
         const accessToken = tokenResponse.data.access_token;
         const userInfo = await axios.get(userInfoEndpoint, {
