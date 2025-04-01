@@ -28,9 +28,6 @@ import {
     passwordValidations,
     loginValidations,
 } from '../Validations/authValidations.js';
-import { saveUserLocation } from '../Utils/userUtils.js';
-import userStatusModel from '../Models/UserStatusModel.js';
-import { getTimestampWithTZ } from '../Utils/timeUtils.js';
 
 export default class AuthController {
     static async login(req, res) {
@@ -404,27 +401,6 @@ export default class AuthController {
                     .status(400)
                     .json({ error: StatusMessage.USER_NOT_FOUND });
             }
-
-            const saveUserLocationResult = await saveUserLocation(
-                res,
-                location,
-                user.id
-            );
-            if (!saveUserLocationResult) return res;
-
-            const userStatusResult = await userStatusModel.createOrUpdate({
-                input: {
-                    user_id: user.id,
-                    socket_id: null,
-                    status: 'online',
-                    last_online: getTimestampWithTZ(),
-                },
-                keyName: 'user_id',
-            });
-            if (!userStatusResult || userStatusResult.length === 0)
-                return res
-                    .status(500)
-                    .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
 
             if (!oauth) await sendConfirmationEmail(user);
 
