@@ -47,7 +47,7 @@ export default class OAuthController {
     }
 
     static async get42OAuthUserData(req, res) {
-        const { OAUTH_CLIENT_ID, OAUTH_SECRET_KEY } = process.env;
+        const { OAUTH_42_CLIENT_ID, OAUTH_42_SECRET_KEY } = process.env;
 
         const { code } = req.body;
 
@@ -56,25 +56,20 @@ export default class OAuthController {
                 'https://api.intra.42.fr/oauth/token',
                 {
                     grant_type: 'authorization_code',
-                    client_id: OAUTH_CLIENT_ID,
-                    client_secret: OAUTH_SECRET_KEY,
+                    client_id: OAUTH_42_CLIENT_ID,
+                    client_secret: OAUTH_42_SECRET_KEY,
                     code: code,
                     redirect_uri: process.env.CALLBACK_ROUTE,
                 }
             );
 
-            const accessTokenOAuth = tokenResponse.data.access_token;
-            const userOAuth = await axios.get('https://api.intra.42.fr/v2/me', {
-                headers: {
-                    Authorization: `Bearer ${accessTokenOAuth}`,
-                },
-            });
+            const userInfo = await OAuthController.getUserInfo(tokenResponse.data.access_token, 'https://api.intra.42.fr/v2/me')
 
             const data = {
-                email: userOAuth.data.email,
-                username: userOAuth.data.login,
-                first_name: userOAuth.data.first_name,
-                last_name: userOAuth.data.last_name,
+                email: userInfo.data.email,
+                username: userInfo.data.login,
+                first_name: userInfo.data.first_name,
+                last_name: userInfo.data.last_name
             };
 
             return data;
@@ -95,6 +90,16 @@ export default class OAuthController {
                 StatusMessage.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    static async getUserInfo(accessToken, endpoint) {
+        const userInfo = await axios.get(endpoint, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        return userInfo
     }
 
     static async loginOAuth(res, validatedUser) {
