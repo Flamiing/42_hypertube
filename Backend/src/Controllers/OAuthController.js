@@ -109,6 +109,8 @@ export default class OAuthController {
                 userInfoEndpoint
             );
 
+            const username = userInfo.data.email.split('@')[0]
+
             const data = {
                 email: userInfo.data.email,
                 username: username,
