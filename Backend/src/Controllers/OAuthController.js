@@ -15,7 +15,8 @@ import { returnErrorStatus } from '../Utils/errorUtils.js';
 export default class OAuthController {
     static OAUTH_STRATEGIES = {
         google: OAuthController.getGoogleOAuthUserData,
-        42: OAuthController.get42OAuthUserData,
+        github: OAuthController.getGitHubOAuthUserData,
+        '42': OAuthController.get42OAuthUserData,
     };
 
     static async handleOAuth(req, res) {
@@ -108,16 +109,12 @@ export default class OAuthController {
                 userInfoEndpoint
             );
 
-            const username = userInfo.data.email.split('@')[0];
-
             const data = {
                 email: userInfo.data.email,
                 username: username,
                 first_name: userInfo.data.given_name,
                 last_name: userInfo.data.family_name,
             };
-
-            console.log('TEST: ', data);
 
             return data;
         } catch (error) {
@@ -139,20 +136,69 @@ export default class OAuthController {
         }
     }
 
-    static async getUserInfo(
-        clientId,
-        secretKey,
-        code,
-        tokenEndpoint,
-        userInfoEndpoint
-    ) {
-        const tokenResponse = await axios.post(tokenEndpoint, {
-            grant_type: 'authorization_code',
-            client_id: clientId,
-            client_secret: secretKey,
-            code: code,
-            redirect_uri: process.env.CALLBACK_ROUTE,
-        });
+    static async getGitHubOAuthUserData(req, res) {
+        const { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_SECRET_KEY } = process.env;
+        
+        const { code } = req.body;
+
+        try {
+            const tokenEndpoint = 'https://github.com/login/oauth/access_token'
+            const userInfoEndpoint = 'https://api.github.com/user'
+
+            const userInfo = await OAuthController.getUserInfo(
+                OAUTH_GITHUB_CLIENT_ID,
+                OAUTH_GITHUB_SECRET_KEY,
+                code,
+                tokenEndpoint,
+                userInfoEndpoint
+            )
+
+            const data = {
+                email: userInfo.data.email,
+                username: userInfo.data.login,
+                first_name: userInfo.data.name ? userInfo.data.name : userInfo.data.login,
+                last_name: userInfo.data.name ? userInfo.data.name : userInfo.data.login,
+                biography: userInfo.data.bio ? userInfo.data.bio : null  
+            };
+
+            if (!data.biography) delete data.biography
+
+            return data;
+        } catch (error) {
+            console.error(
+                'ERROR:',
+                error.response?.data?.error_description ?? error
+            );
+            if (error.response?.status === 401)
+                return returnErrorStatus(
+                    res,
+                    401,
+                    error.response.data.error_description
+                );
+            return returnErrorStatus(
+                res,
+                500,
+                StatusMessage.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    static async getUserInfo(clientId, secretKey, code, tokenEndpoint, userInfoEndpoint) {
+        const tokenResponse = await axios.post(
+            tokenEndpoint,
+            {
+                grant_type: 'authorization_code',
+                client_id: clientId,
+                client_secret: secretKey,
+                code: code,
+                redirect_uri: process.env.CALLBACK_ROUTE,
+            },
+            {
+                headers: {
+                    Accept: 'application/json'
+                }
+            }
+        );
 
         const accessToken = tokenResponse.data.access_token;
         const userInfo = await axios.get(userInfoEndpoint, {
