@@ -63,13 +63,16 @@ export default class OAuthController {
                 }
             );
 
-            const userInfo = await OAuthController.getUserInfo(tokenResponse.data.access_token, 'https://api.intra.42.fr/v2/me')
+            const userInfo = await OAuthController.getUserInfo(
+                tokenResponse.data.access_token,
+                'https://api.intra.42.fr/v2/me'
+            );
 
             const data = {
                 email: userInfo.data.email,
                 username: userInfo.data.login,
                 first_name: userInfo.data.first_name,
-                last_name: userInfo.data.last_name
+                last_name: userInfo.data.last_name,
             };
 
             return data;
@@ -99,7 +102,7 @@ export default class OAuthController {
             },
         });
 
-        return userInfo
+        return userInfo;
     }
 
     static async loginOAuth(res, validatedUser) {
