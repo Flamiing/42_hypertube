@@ -16,7 +16,7 @@ export default class OAuthController {
     static OAUTH_STRATEGIES = {
         google: OAuthController.getGoogleOAuthUserData,
         github: OAuthController.getGitHubOAuthUserData,
-        '42': OAuthController.get42OAuthUserData,
+        42: OAuthController.get42OAuthUserData,
     };
 
     static async handleOAuth(req, res) {
@@ -138,12 +138,12 @@ export default class OAuthController {
 
     static async getGitHubOAuthUserData(req, res) {
         const { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_SECRET_KEY } = process.env;
-        
+
         const { code } = req.body;
 
         try {
-            const tokenEndpoint = 'https://github.com/login/oauth/access_token'
-            const userInfoEndpoint = 'https://api.github.com/user'
+            const tokenEndpoint = 'https://github.com/login/oauth/access_token';
+            const userInfoEndpoint = 'https://api.github.com/user';
 
             const userInfo = await OAuthController.getUserInfo(
                 OAUTH_GITHUB_CLIENT_ID,
@@ -151,17 +151,21 @@ export default class OAuthController {
                 code,
                 tokenEndpoint,
                 userInfoEndpoint
-            )
+            );
 
             const data = {
                 email: userInfo.data.email,
                 username: userInfo.data.login,
-                first_name: userInfo.data.name ? userInfo.data.name : userInfo.data.login,
-                last_name: userInfo.data.name ? userInfo.data.name : userInfo.data.login,
-                biography: userInfo.data.bio ? userInfo.data.bio : null  
+                first_name: userInfo.data.name
+                    ? userInfo.data.name
+                    : userInfo.data.login,
+                last_name: userInfo.data.name
+                    ? userInfo.data.name
+                    : userInfo.data.login,
+                biography: userInfo.data.bio ? userInfo.data.bio : null,
             };
 
-            if (!data.biography) delete data.biography
+            if (!data.biography) delete data.biography;
 
             return data;
         } catch (error) {
@@ -183,7 +187,13 @@ export default class OAuthController {
         }
     }
 
-    static async getUserInfo(clientId, secretKey, code, tokenEndpoint, userInfoEndpoint) {
+    static async getUserInfo(
+        clientId,
+        secretKey,
+        code,
+        tokenEndpoint,
+        userInfoEndpoint
+    ) {
         const tokenResponse = await axios.post(
             tokenEndpoint,
             {
@@ -195,8 +205,8 @@ export default class OAuthController {
             },
             {
                 headers: {
-                    Accept: 'application/json'
-                }
+                    Accept: 'application/json',
+                },
             }
         );
 
