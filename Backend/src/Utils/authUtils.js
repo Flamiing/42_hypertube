@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 // Local Imports:
 import { createConfirmationToken } from './jsonWebTokenUtils.js';
 import userModel from '../Models/UserModel.js';
-import getPublicUser from './getPublicUser.js'
+import getPublicUser from './getPublicUser.js';
 import { createAccessToken, createRefreshToken } from './jsonWebTokenUtils.js';
 import StatusMessage from './StatusMessage.js';
 
@@ -140,8 +140,7 @@ export async function registerUser(res, validatedUser, oauth = false) {
     const isUnique = await userModel.isUnique({ email, username });
     if (isUnique) {
         // Encrypt password
-        if (!oauth)
-            validatedUser.data.password = await hashPassword(password);
+        if (!oauth) validatedUser.data.password = await hashPassword(password);
 
         const { location } = validatedUser.data;
         delete validatedUser.data.location;

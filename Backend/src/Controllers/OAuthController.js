@@ -4,7 +4,11 @@ import axios from 'axios';
 // Local Imports:
 import userModel from '../Models/UserModel.js';
 import StatusMessage from '../Utils/StatusMessage.js';
-import { registerUser, createAuthTokens, checkAuthStatus } from '../Utils/authUtils.js';
+import {
+    registerUser,
+    createAuthTokens,
+    checkAuthStatus,
+} from '../Utils/authUtils.js';
 import { validatePartialUser } from '../Schemas/userSchema.js';
 
 export default class OAuthController {

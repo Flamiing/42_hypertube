@@ -17,7 +17,7 @@ import {
     sendResetPasswordEmail,
     hashPassword,
     createAuthTokens,
-    registerUser
+    registerUser,
 } from '../Utils/authUtils.js';
 import {
     confirmAccountValidations,
