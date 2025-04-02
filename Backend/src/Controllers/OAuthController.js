@@ -15,10 +15,10 @@ import { returnErrorStatus } from '../Utils/errorUtils.js';
 
 export default class OAuthController {
     static OAUTH_STRATEGIES = {
-        'twitch': OAuthController.getTwitchOAuthUserData,
-        'google': OAuthController.getGoogleOAuthUserData,
-        'github': OAuthController.getGitHubOAuthUserData,
-        '42': OAuthController.get42OAuthUserData,
+        twitch: OAuthController.getTwitchOAuthUserData,
+        google: OAuthController.getGoogleOAuthUserData,
+        github: OAuthController.getGitHubOAuthUserData,
+        42: OAuthController.get42OAuthUserData,
     };
 
     static async handleOAuth(req, res) {
@@ -50,7 +50,12 @@ export default class OAuthController {
     }
 
     static async get42OAuthUserData(req, res) {
-        const { OAUTH_42_CLIENT_ID, OAUTH_42_SECRET_KEY, TOKEN_ENDPOINT_42, USER_INFO_ENDPOINT_42 } = process.env;
+        const {
+            OAUTH_42_CLIENT_ID,
+            OAUTH_42_SECRET_KEY,
+            TOKEN_ENDPOINT_42,
+            USER_INFO_ENDPOINT_42,
+        } = process.env;
 
         const { code } = req.body;
 
@@ -91,7 +96,12 @@ export default class OAuthController {
     }
 
     static async getGoogleOAuthUserData(req, res) {
-        const { OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_SECRET_KEY, TOKEN_ENDPOINT_GOOGLE, USER_INFO_ENDPOINT_GOOGLE } = process.env;
+        const {
+            OAUTH_GOOGLE_CLIENT_ID,
+            OAUTH_GOOGLE_SECRET_KEY,
+            TOKEN_ENDPOINT_GOOGLE,
+            USER_INFO_ENDPOINT_GOOGLE,
+        } = process.env;
 
         const { code } = req.body;
 
@@ -104,7 +114,7 @@ export default class OAuthController {
                 USER_INFO_ENDPOINT_GOOGLE
             );
 
-            const username = userInfo.email.split('@')[0]
+            const username = userInfo.email.split('@')[0];
 
             const data = {
                 email: userInfo.email,
@@ -134,7 +144,12 @@ export default class OAuthController {
     }
 
     static async getTwitchOAuthUserData(req, res) {
-        const { OAUTH_TWITCH_CLIENT_ID, OAUTH_TWITCH_SECRET_KEY, TOKEN_ENDPOINT_TWITCH, USER_INFO_ENDPOINT_TWITCH } = process.env;
+        const {
+            OAUTH_TWITCH_CLIENT_ID,
+            OAUTH_TWITCH_SECRET_KEY,
+            TOKEN_ENDPOINT_TWITCH,
+            USER_INFO_ENDPOINT_TWITCH,
+        } = process.env;
 
         const { code } = req.body;
 
@@ -150,11 +165,15 @@ export default class OAuthController {
             const data = {
                 email: userInfo.data[0].email,
                 username: userInfo.data[0].login,
-                first_name: userInfo.data[0].display_name ? userInfo.data[0].display_name : userInfo.data[0].login,
+                first_name: userInfo.data[0].display_name
+                    ? userInfo.data[0].display_name
+                    : userInfo.data[0].login,
                 last_name: userInfo.data[0].login,
-                biography: userInfo.data[0].description ? userInfo.data[0].description : null
+                biography: userInfo.data[0].description
+                    ? userInfo.data[0].description
+                    : null,
             };
-            
+
             return data;
         } catch (error) {
             console.error(
@@ -176,7 +195,12 @@ export default class OAuthController {
     }
 
     static async getGitHubOAuthUserData(req, res) {
-        const { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_SECRET_KEY, TOKEN_ENDPOINT_GITHUB, USER_INFO_ENDPOINT_GITHUB } = process.env;
+        const {
+            OAUTH_GITHUB_CLIENT_ID,
+            OAUTH_GITHUB_SECRET_KEY,
+            TOKEN_ENDPOINT_GITHUB,
+            USER_INFO_ENDPOINT_GITHUB,
+        } = process.env;
 
         const { code } = req.body;
 
@@ -192,12 +216,8 @@ export default class OAuthController {
             const data = {
                 email: userInfo.email,
                 username: userInfo.login,
-                first_name: userInfo.name
-                    ? userInfo.name
-                    : userInfo.login,
-                last_name: userInfo.name
-                    ? userInfo.name
-                    : userInfo.login,
+                first_name: userInfo.name ? userInfo.name : userInfo.login,
+                last_name: userInfo.name ? userInfo.name : userInfo.login,
                 biography: userInfo.bio ? userInfo.bio : null,
             };
 
@@ -239,18 +259,20 @@ export default class OAuthController {
                 code: code,
                 redirect_uri: process.env.CALLBACK_ROUTE,
             },
-            { headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            } }
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            }
         );
 
         const accessToken = tokenResponse.data.access_token;
         const userInfo = await axios.get(userInfoEndpoint, {
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Client-ID': clientId
-            }
+                Authorization: `Bearer ${accessToken}`,
+                'Client-ID': clientId,
+            },
         });
 
         return userInfo.data;
