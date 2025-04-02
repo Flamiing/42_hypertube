@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import capitalizeLetters from "../../utils/capitalizeLetters";
-import calculateAge from "../../utils/calculateAge";
 
 interface MainInformationProps {
 	user: {
@@ -31,12 +30,7 @@ const MainInformation: React.FC<MainInformationProps> = ({
 			</div>
 
 			<div className="flex flex-col gap-1">
-				<p className="text-2xl font-semibold">
-					{user.username}{" "}
-					<span className="text-gray-500">
-						{user.age != 0 && calculateAge(user.age)}
-					</span>
-				</p>
+				<p className="text-2xl font-semibold">{user.username}</p>
 
 				<div className="flex gap-1 flex-wrap justify-center font-light text-gray-500">
 					<p>
