@@ -261,7 +261,7 @@ export default class OAuthController {
             },
             {
                 headers: {
-                    Accept: 'application/json',
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
             }
@@ -270,7 +270,7 @@ export default class OAuthController {
         const accessToken = tokenResponse.data.access_token;
         const userInfo = await axios.get(userInfoEndpoint, {
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${accessToken}`,
                 'Client-ID': clientId,
             },
         });
