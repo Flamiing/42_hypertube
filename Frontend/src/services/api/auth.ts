@@ -103,7 +103,7 @@ export const authApi = {
 
 	oauth: async (code: string, location): Promise<AuthResponse> => {
 		try {
-			await apiRequest("auth/oauth", {
+			await apiRequest("auth/oauth/42", {
 				method: "POST",
 				body: JSON.stringify({ code, location }),
 			});

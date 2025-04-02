@@ -138,4 +138,6 @@ export default class StatusMessage {
     static PWNED_PASSWORD =
         'Your password is known to be compromised in security breaches. Please create a different, more secure password.';
     static CANNOT_CONTAIN_BAD_WORDS = 'Cannot contain profane words';
+    static OAUTH_PROVIDER_NOT_FOUND =
+        'The specified OAuth provider is not supported. Please check the provider and try again.';
 }
