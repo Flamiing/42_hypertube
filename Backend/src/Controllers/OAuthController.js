@@ -1,5 +1,6 @@
 // Third-Party Imports:
 import axios from 'axios';
+import qs from 'qs';
 
 // Local Imports:
 import userModel from '../Models/UserModel.js';
@@ -14,9 +15,10 @@ import { returnErrorStatus } from '../Utils/errorUtils.js';
 
 export default class OAuthController {
     static OAUTH_STRATEGIES = {
-        google: OAuthController.getGoogleOAuthUserData,
-        github: OAuthController.getGitHubOAuthUserData,
-        42: OAuthController.get42OAuthUserData,
+        'twitch': OAuthController.getTwitchOAuthUserData,
+        'google': OAuthController.getGoogleOAuthUserData,
+        'github': OAuthController.getGitHubOAuthUserData,
+        '42': OAuthController.get42OAuthUserData,
     };
 
     static async handleOAuth(req, res) {
@@ -48,27 +50,24 @@ export default class OAuthController {
     }
 
     static async get42OAuthUserData(req, res) {
-        const { OAUTH_42_CLIENT_ID, OAUTH_42_SECRET_KEY } = process.env;
+        const { OAUTH_42_CLIENT_ID, OAUTH_42_SECRET_KEY, TOKEN_ENDPOINT_42, USER_INFO_ENDPOINT_42 } = process.env;
 
         const { code } = req.body;
 
         try {
-            const tokenEndpoint = 'https://api.intra.42.fr/oauth/token';
-            const userInfoEndpoint = 'https://api.intra.42.fr/v2/me';
-
             const userInfo = await OAuthController.getUserInfo(
                 OAUTH_42_CLIENT_ID,
                 OAUTH_42_SECRET_KEY,
                 code,
-                tokenEndpoint,
-                userInfoEndpoint
+                TOKEN_ENDPOINT_42,
+                USER_INFO_ENDPOINT_42
             );
 
             const data = {
-                email: userInfo.data.email,
-                username: userInfo.data.login,
-                first_name: userInfo.data.first_name,
-                last_name: userInfo.data.last_name,
+                email: userInfo.email,
+                username: userInfo.login,
+                first_name: userInfo.first_name,
+                last_name: userInfo.last_name,
             };
 
             return data;
@@ -92,30 +91,26 @@ export default class OAuthController {
     }
 
     static async getGoogleOAuthUserData(req, res) {
-        const { OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_SECRET_KEY } = process.env;
+        const { OAUTH_GOOGLE_CLIENT_ID, OAUTH_GOOGLE_SECRET_KEY, TOKEN_ENDPOINT_GOOGLE, USER_INFO_ENDPOINT_GOOGLE } = process.env;
 
         const { code } = req.body;
 
         try {
-            const tokenEndpoint = 'https://oauth2.googleapis.com/token';
-            const userInfoEndpoint =
-                'https://www.googleapis.com/oauth2/v2/userinfo';
-
             const userInfo = await OAuthController.getUserInfo(
                 OAUTH_GOOGLE_CLIENT_ID,
                 OAUTH_GOOGLE_SECRET_KEY,
                 code,
-                tokenEndpoint,
-                userInfoEndpoint
+                TOKEN_ENDPOINT_GOOGLE,
+                USER_INFO_ENDPOINT_GOOGLE
             );
 
-            const username = userInfo.data.email.split('@')[0];
+            const username = userInfo.email.split('@')[0]
 
             const data = {
-                email: userInfo.data.email,
+                email: userInfo.email,
                 username: username,
-                first_name: userInfo.data.given_name,
-                last_name: userInfo.data.family_name,
+                first_name: userInfo.given_name,
+                last_name: userInfo.family_name,
             };
 
             return data;
@@ -138,33 +133,72 @@ export default class OAuthController {
         }
     }
 
-    static async getGitHubOAuthUserData(req, res) {
-        const { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_SECRET_KEY } = process.env;
+    static async getTwitchOAuthUserData(req, res) {
+        const { OAUTH_TWITCH_CLIENT_ID, OAUTH_TWITCH_SECRET_KEY, TOKEN_ENDPOINT_TWITCH, USER_INFO_ENDPOINT_TWITCH } = process.env;
 
         const { code } = req.body;
 
         try {
-            const tokenEndpoint = 'https://github.com/login/oauth/access_token';
-            const userInfoEndpoint = 'https://api.github.com/user';
+            const userInfo = await OAuthController.getUserInfo(
+                OAUTH_TWITCH_CLIENT_ID,
+                OAUTH_TWITCH_SECRET_KEY,
+                code,
+                TOKEN_ENDPOINT_TWITCH,
+                USER_INFO_ENDPOINT_TWITCH
+            );
 
+            const data = {
+                email: userInfo.data[0].email,
+                username: userInfo.data[0].login,
+                first_name: userInfo.data[0].display_name ? userInfo.data[0].display_name : userInfo.data[0].login,
+                last_name: userInfo.data[0].login,
+                biography: userInfo.data[0].description ? userInfo.data[0].description : null
+            };
+            
+            return data;
+        } catch (error) {
+            console.error(
+                'ERROR:',
+                error.response?.data?.error_description ?? error
+            );
+            if (error.response?.status === 401)
+                return returnErrorStatus(
+                    res,
+                    401,
+                    error.response.data.error_description
+                );
+            return returnErrorStatus(
+                res,
+                500,
+                StatusMessage.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    static async getGitHubOAuthUserData(req, res) {
+        const { OAUTH_GITHUB_CLIENT_ID, OAUTH_GITHUB_SECRET_KEY, TOKEN_ENDPOINT_GITHUB, USER_INFO_ENDPOINT_GITHUB } = process.env;
+
+        const { code } = req.body;
+
+        try {
             const userInfo = await OAuthController.getUserInfo(
                 OAUTH_GITHUB_CLIENT_ID,
                 OAUTH_GITHUB_SECRET_KEY,
                 code,
-                tokenEndpoint,
-                userInfoEndpoint
+                TOKEN_ENDPOINT_GITHUB,
+                USER_INFO_ENDPOINT_GITHUB
             );
 
             const data = {
-                email: userInfo.data.email,
-                username: userInfo.data.login,
-                first_name: userInfo.data.name
-                    ? userInfo.data.name
-                    : userInfo.data.login,
-                last_name: userInfo.data.name
-                    ? userInfo.data.name
-                    : userInfo.data.login,
-                biography: userInfo.data.bio ? userInfo.data.bio : null,
+                email: userInfo.email,
+                username: userInfo.login,
+                first_name: userInfo.name
+                    ? userInfo.name
+                    : userInfo.login,
+                last_name: userInfo.name
+                    ? userInfo.name
+                    : userInfo.login,
+                biography: userInfo.bio ? userInfo.bio : null,
             };
 
             if (!data.biography) delete data.biography;
@@ -205,21 +239,21 @@ export default class OAuthController {
                 code: code,
                 redirect_uri: process.env.CALLBACK_ROUTE,
             },
-            {
-                headers: {
-                    Accept: 'application/json',
-                },
-            }
+            { headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            } }
         );
 
         const accessToken = tokenResponse.data.access_token;
         const userInfo = await axios.get(userInfoEndpoint, {
             headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
+                'Authorization': `Bearer ${accessToken}`,
+                'Client-ID': clientId
+            }
         });
 
-        return userInfo;
+        return userInfo.data;
     }
 
     static async loginOAuth(res, validatedUser) {
