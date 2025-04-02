@@ -15,10 +15,10 @@ import { returnErrorStatus } from '../Utils/errorUtils.js';
 
 export default class OAuthController {
     static OAUTH_STRATEGIES = {
-        twitch: OAuthController.getTwitchOAuthUserData,
-        google: OAuthController.getGoogleOAuthUserData,
-        github: OAuthController.getGitHubOAuthUserData,
-        42: OAuthController.get42OAuthUserData,
+        'twitch': OAuthController.getTwitchOAuthUserData,
+        'google': OAuthController.getGoogleOAuthUserData,
+        'github': OAuthController.getGitHubOAuthUserData,
+        '42': OAuthController.get42OAuthUserData,
     };
 
     static async handleOAuth(req, res) {

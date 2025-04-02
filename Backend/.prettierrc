@@ -4,5 +4,5 @@
     "trailingComma": "es5",
     "printWidth": 80,
     "tabWidth": 4,
-    "quoteProps": "as-needed"
+    "quoteProps": "preserve"
 }
