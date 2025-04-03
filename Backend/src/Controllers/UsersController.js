@@ -162,6 +162,7 @@ export default class UsersController {
             );
 
         privateUser.email = user.email;
+        privateUser.prefered_language = user.prefered_language
 
         return privateUser;
     }
