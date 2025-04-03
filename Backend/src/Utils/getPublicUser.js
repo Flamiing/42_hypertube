@@ -10,7 +10,7 @@ export default async function getPublicUser(user) {
         last_name: user.last_name,
         biography: user.biography,
         profile_picture: profilePicture,
-        prefered_language: user.prefered_language
+        prefered_language: user.prefered_language,
     };
 
     return publicUser;
