@@ -6,6 +6,9 @@ import jwt from 'jsonwebtoken';
 // Local Imports:
 import { createConfirmationToken } from './jsonWebTokenUtils.js';
 import userModel from '../Models/UserModel.js';
+import getPublicUser from './getPublicUser.js';
+import { createAccessToken, createRefreshToken } from './jsonWebTokenUtils.js';
+import StatusMessage from './StatusMessage.js';
 
 export async function checkAuthStatus(req) {
     try {
@@ -101,4 +104,75 @@ export function setSession(req, accessToken) {
         const data = jwt.verify(accessToken, JWT_SECRET_KEY);
         req.session.user = data;
     } catch {}
+}
+
+export async function createAuthTokens(res, data) {
+    const accessToken = createAccessToken(data);
+    const refreshToken = createRefreshToken(data);
+    const result = await userModel.update({
+        input: { refresh_token: refreshToken },
+        id: data.id,
+    });
+    if (!result)
+        return res
+            .status(500)
+            .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
+    if (result.length === 0)
+        return res.status(400).json({ msg: StatusMessage.USER_NOT_FOUND });
+
+    return res
+        .cookie('access_token', accessToken, {
+            httpOnly: true, // Cookie only accessible from the server
+            secure: process.env.BACKEND_NODE_ENV === 'production', // Only accessible via https
+            sameSite: 'strict', // Cookie only accessible from the same domain
+            maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRY_COOKIE), // Cookie only valid for 1h
+        })
+        .cookie('refresh_token', refreshToken, {
+            httpOnly: true, // Cookie only accessible from the server
+            secure: process.env.BACKEND_NODE_ENV === 'production', // Only accessible via https
+            sameSite: 'strict', // Cookie only accessible from the same domain
+            maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY_COOKIE), // Cookie only valid for 30d
+        });
+}
+
+export async function registerUser(res, validatedUser, oauth = false) {
+    const { email, username, password } = validatedUser.data;
+    const isUnique = await userModel.isUnique({ email, username });
+    if (isUnique) {
+        // Encrypt password
+        if (!oauth) validatedUser.data.password = await hashPassword(password);
+
+        const { location } = validatedUser.data;
+        delete validatedUser.data.location;
+
+        const user = await userModel.create({ input: validatedUser.data });
+        if (user === null) {
+            return res
+                .status(500)
+                .json({ error: StatusMessage.INTERNAL_SERVER_ERROR });
+        } else if (user.length === 0) {
+            return res
+                .status(400)
+                .json({ error: StatusMessage.USER_NOT_FOUND });
+        }
+
+        if (!oauth) await sendConfirmationEmail(user);
+
+        if (oauth) {
+            await createAuthTokens(res, user);
+            if (!('set-cookie' in res.getHeaders())) return res;
+        }
+
+        // Returns public user info:
+        const publicUser = await getPublicUser(user);
+        if (!publicUser)
+            return res
+                .status(500)
+                .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
+        return res.status(201).json({ msg: publicUser });
+    }
+
+    return res
+        .status(400)
+        .json({ msg: StatusMessage.DUPLICATE_USERNAME_OR_EMAIL });
 }
