@@ -47,25 +47,14 @@ const index = () => {
 		return newValue !== originalValue;
 	};
 
-	const haveTagsChanged = (newTags: number[], originalTags: number[]) => {
-		if (newTags.length !== originalTags.length) return true;
-		const originalTagIds = originalTags.map((tag) => tag.id);
-		return newTags.some((tag) => !originalTagIds.includes(tag));
-	};
-
-	// Get changed fields and always include tags
+	// Get changed fields
 	const getChangedFields = () => {
 		if (!formData || !originalData) return {};
 
-		const changes: Partial<EditProfileData> = {
-			// Always include tags, even if unchanged
-			tags: formData.tags.map((tag) => tag.id) || [],
-		};
+		const changes: Partial<EditProfileData> = {};
 
 		Object.keys(formData).forEach((key) => {
 			const typedKey = key as keyof EditProfileData;
-			// Skip tags as we've already handled them
-			if (typedKey === "tags") return;
 
 			if (hasValueChanged(formData[typedKey], originalData[typedKey])) {
 				changes[typedKey] = formData[typedKey];
@@ -122,12 +111,7 @@ const index = () => {
 
 		const changedFields = getChangedFields();
 
-		if (
-			Object.keys(changedFields).length === 1 &&
-			"tags" in changedFields &&
-			!haveTagsChanged(changedFields.tags, originalData.tags)
-		)
-			return;
+		if (Object.keys(changedFields).length === 0) return;
 
 		setIsSubmitting(true);
 		try {

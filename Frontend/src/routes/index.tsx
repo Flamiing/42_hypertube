@@ -12,6 +12,7 @@ import ConfirmEmail from "../pages/Callbacks/ConfirmEmail";
 import Browse from "../pages/Browse";
 import PublicProfile from "../pages/PublicProfile";
 import ResetPassword from "../pages/Callbacks/ResetPassword";
+import Video from "../pages/Video";
 
 const protectedRoutes = {
 	profileEdit: {
@@ -43,6 +44,14 @@ const protectedRoutes = {
 		element: (
 			<ProtectedRoute>
 				<PublicProfile />
+			</ProtectedRoute>
+		),
+	},
+	video: {
+		path: "watch",
+		element: (
+			<ProtectedRoute>
+				<Video />
 			</ProtectedRoute>
 		),
 	},

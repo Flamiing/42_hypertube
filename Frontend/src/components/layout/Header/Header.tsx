@@ -113,6 +113,11 @@ const Header: React.FC = () => {
 											Browse
 										</button>
 									</Link>
+									<Link to="/watch">
+										<button className="text-font-main font-medium btn whitespace-nowrap text-base px-6 py-2 rounded-full hover:bg-secondary-light transition-colors duration-300">
+											Video
+										</button>
+									</Link>
 									<Link to="/profile">
 										<button className="text-font-main font-medium btn whitespace-nowrap text-base px-6 py-2 rounded-full hover:bg-secondary-light transition-colors duration-300">
 											Profile
@@ -201,6 +206,14 @@ const Header: React.FC = () => {
 									>
 										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
 											Browse
+										</button>
+									</Link>
+									<Link
+										to="/watch"
+										onClick={handleLinkClick}
+									>
+										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
+											Video
 										</button>
 									</Link>
 									<Link
