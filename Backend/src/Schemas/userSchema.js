@@ -23,6 +23,8 @@ const disallowedUsernames = [
     'blocked-users',
 ];
 
+const acceptedLanguages = ['en', 'es', 'de']
+
 const userSchema = z.object({
     email: z
         .string({
@@ -135,6 +137,15 @@ const userSchema = z.object({
         })
         .max(500, 'Biography must be 500 characters or fewer.')
         .optional(),
+    prefered_language: z.string({
+        invalid_type_error: 'Invalid language option.',
+    }).max(2, 'Language option can only be 2 characters long.')
+    .transform((lang) => lang.toLowerCase())
+    .refine(
+        (lang) => acceptedLanguages.includes(lang),
+        { message: "Language must be one of: 'en' (English), 'es' (Spanish), or 'de' (German)." }
+    )
+    .optional()
 });
 
 export async function validateUser(input) {

@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE language_enum AS ENUM('EN', 'ES', 'DE');
+CREATE TYPE language_enum AS ENUM('en', 'es', 'de');
 
 CREATE TABLE users (
 	id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -11,7 +11,7 @@ CREATE TABLE users (
 	password VARCHAR(255) DEFAULT NULL,
 	biography VARCHAR(500),
 	profile_picture VARCHAR(255) DEFAULT NULL,
-    prefered_language language_enum DEFAULT 'EN',
+    prefered_language language_enum DEFAULT 'en',
 	active_account BOOLEAN DEFAULT FALSE,
 	oauth BOOLEAN DEFAULT FALSE,
     refresh_token VARCHAR(2048) DEFAULT NULL,
