@@ -13,7 +13,6 @@ interface UserData {
 	profile_picture: string;
 	gender: string;
 	sexual_preference: string;
-	location?: string;
 }
 
 interface ProfileHeaderProps {

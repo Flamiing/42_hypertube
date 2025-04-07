@@ -6,7 +6,6 @@ import OauthButton from "../../components/common/Oauth42Button";
 import authApi from "../../services/api/auth";
 import MsgCard from "../../components/common/MsgCard";
 import RegularButton from "../../components/common/RegularButton";
-import getLocationNotAllowed from "../../services/geoLocation/notAllowed";
 
 const Form: React.FC = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,16 +35,7 @@ const Form: React.FC = () => {
 		setIsSubmitting(true);
 
 		try {
-			// Get location before submitting
-			const location = await getLocationNotAllowed();
-			const formDataWithLocation = {
-				...formData,
-				location,
-			};
-
-			const { success, message } = await authApi.register(
-				formDataWithLocation
-			);
+			const { success, message } = await authApi.register(formData);
 			if (success) {
 				setFormData({
 					username: "",

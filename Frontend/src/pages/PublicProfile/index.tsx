@@ -22,41 +22,11 @@ const index = () => {
 	const { getUserDistance } = useUsers();
 
 	const [userProfile, setUserProfile] = useState(profile);
-	const [distance, setDistance] = useState<number | null>(null);
 
 	useEffect(() => {
 		setUserProfile(profile);
 	}, [profile]);
 
-	useEffect(() => {
-		const calculateDistance = async () => {
-			if (
-				isAuthenticated &&
-				profile?.location &&
-				currentUserProfile?.location
-			) {
-				try {
-					const location1 = { ...profile.location };
-					const location2 = { ...currentUserProfile.location };
-
-					// Remove allows_location before sending to API
-					delete location1.allows_location;
-					delete location2.allows_location;
-
-					const calculatedDistance = await getUserDistance(
-						location1,
-						location2
-					);
-					setDistance(calculatedDistance);
-				} catch (error) {
-					console.error("Error calculating distance:", error);
-					setDistance(null);
-				}
-			}
-		};
-
-		calculateDistance();
-	}, [profile, currentUserProfile, isAuthenticated]);
 
 	const handleProfileUpdate = (updatedData) => {
 		setUserProfile((prev) => ({ ...prev, ...updatedData }));
@@ -91,7 +61,6 @@ const index = () => {
 				<ProfileHeader
 					user={userProfile}
 					onProfileUpdate={handleProfileUpdate}
-					distance={distance}
 				/>
 			</section>
 			<Info user={userProfile} />

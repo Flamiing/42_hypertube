@@ -22,23 +22,6 @@ export const useEditProfile = () => {
 		}
 	};
 
-	const updateLocation = async (location) => {
-		setLoading(true);
-		setError(null);
-		try {
-			const response = await profileApi.editLocation(location);
-			return response;
-		} catch (err) {
-			const errorMessage = err.message
-				? err.message
-				: "Failed to update location";
-			setError(errorMessage);
-			throw new Error(errorMessage);
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	const uploadProfilePicture = async (userId: string, file: File) => {
 		setLoading(true);
 		setError(null);
@@ -129,7 +112,6 @@ export const useEditProfile = () => {
 
 	return {
 		updateProfile,
-		updateLocation,
 		uploadProfilePicture,
 		uploadImages,
 		removeImage,
