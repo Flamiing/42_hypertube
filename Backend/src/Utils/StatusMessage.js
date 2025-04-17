@@ -140,4 +140,6 @@ export default class StatusMessage {
     static CANNOT_CONTAIN_BAD_WORDS = 'Cannot contain profane words';
     static OAUTH_PROVIDER_NOT_FOUND =
         'The specified OAuth provider is not supported. Please check the provider and try again.';
+    static INVALID_MOVIES_SOURCE = 'Invalid movies source.'
+    static MUST_INCLUDE_MOVIES_SOURCE = 'Movies source must be included in the query.'
 }
