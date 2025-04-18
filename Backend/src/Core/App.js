@@ -36,7 +36,7 @@ export default class App {
             `${this.API_PREFIX}/auth/confirm`,
             `${this.API_PREFIX}/auth/password/reset`,
             `${this.API_PREFIX}/auth/oauth/*`,
-            `${this.API_PREFIX}/movies/*`, // TODO: Remove after testing
+            `${this.API_PREFIX}/movies/*/*`, // TODO: Remove after testing
         ];
 
         this.#setupMiddleware();

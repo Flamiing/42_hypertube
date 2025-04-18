@@ -9,7 +9,7 @@ export default class MoviesRouter {
         const router = Router();
 
         // GET:
-        router.get('/library', LibraryController.library);
+        router.get('/library/:page?', LibraryController.library);
 
         return router;
     }
