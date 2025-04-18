@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Local Imports:
-import { returnErrorStatus } from "./errorUtils.js"
+import { returnErrorStatus } from './errorUtils.js';
 
 export function isValidSource(res, accepted_sources, source) {
     if (!source)
@@ -17,17 +17,17 @@ export function isValidSource(res, accepted_sources, source) {
 }
 
 export async function fetchRawMovies(url) {
-    const rawMovies = []
+    const rawMovies = [];
 
     try {
         const response = await axios.get(url);
         const data = response.data.response.docs;
         rawMovies.push(...data);
     } catch (error) {
-        console.error('ERROR:', error)
+        console.error('ERROR:', error);
         return null;
     }
 
-    console.log('TEST:', rawMovies)
-    return rawMovies
+    console.log('TEST:', rawMovies);
+    return rawMovies;
 }
