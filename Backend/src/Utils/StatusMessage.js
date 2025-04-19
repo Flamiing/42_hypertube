@@ -143,4 +143,6 @@ export default class StatusMessage {
     static INVALID_MOVIES_SOURCE = 'Invalid movies source.';
     static MUST_INCLUDE_MOVIES_SOURCE =
         'Movies source must be included in the query.';
+    static COULD_NOT_FETCH_MOVIES = 'There was an error fetching movies. Please try again later.';
+    static COULD_NOT_FETCH_MOVIES_INFO = 'There was an error fetching movies information. Please try again later.';
 }
