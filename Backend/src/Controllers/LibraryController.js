@@ -78,8 +78,8 @@ export default class LibraryController {
                     isWatched: false, // TODO: Get this from our DB
                     language: movieData.original_language,
                     downloads: rawMovie.downloads,
-                    identifier: rawMovie.identifier // Used to build the torrent download URL
-                }
+                    identifier: rawMovie.identifier, // Used to build the torrent download URL
+                };
                 movies.push(movie);
             } catch (error) {
                 console.error('ERROR:', error);
