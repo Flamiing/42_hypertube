@@ -18,6 +18,7 @@ import { checkAuthStatusMiddleware } from '../Middlewares/checkAuthStatusMiddlew
 // Router Imports:
 import AuthRouter from '../Routes/AuthRouter.js';
 import UsersRouter from '../Routes/UsersRouter.js';
+import MoviesRouter from '../Routes/MoviesRouter.js';
 
 export default class App {
     constructor() {
@@ -35,6 +36,7 @@ export default class App {
             `${this.API_PREFIX}/auth/confirm`,
             `${this.API_PREFIX}/auth/password/reset`,
             `${this.API_PREFIX}/auth/oauth/*`,
+            `${this.API_PREFIX}/movies/*/*`, // TODO: Remove after testing
         ];
 
         this.#setupMiddleware();
@@ -65,5 +67,6 @@ export default class App {
     #setupRoutes() {
         this.app.use(`${this.API_PREFIX}/auth`, AuthRouter.createRouter());
         this.app.use(`${this.API_PREFIX}/users`, UsersRouter.createRouter());
+        this.app.use(`${this.API_PREFIX}/movies`, MoviesRouter.createRouter());
     }
 }
