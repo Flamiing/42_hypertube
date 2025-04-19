@@ -35,7 +35,7 @@ export default class LibraryController {
 
     static async getArchiveLibrary(res, page) {
         const rows = 10;
-        const url = `https://archive.org/advancedsearch.php?q=collection%3Afeature_films+AND+mediatype%3Amovies+AND+date%3A%5B*+TO+2025-01-01%5D&fl%5B%5D=title&fl%5B%5D=year&fl%5B%5D=description&sort%5B%5D=downloads+desc&rows=${rows}&page=${page}&output=json`;
+        const url = `https://archive.org/advancedsearch.php?q=collection%3Afeature_films+AND+mediatype%3Amovies+AND+date%3A%5B*+TO+2025-01-01%5D&fl%5B%5D=title&fl%5B%5D=year&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=identifier&sort%5B%5D=downloads+desc&rows=${rows}&page=${page}&output=json`;
 
         const rawMovies = await fetchRawMovies(url);
         if (!rawMovies)
@@ -77,7 +77,9 @@ export default class LibraryController {
                     thumbnail: thumbnail || 'N/A',
                     isWatched: false, // TODO: Get this from our DB
                     language: movieData.original_language,
-                };
+                    downloads: rawMovie.downloads,
+                    identifier: rawMovie.identifier // Used to build the torrent download URL
+                }
                 movies.push(movie);
             } catch (error) {
                 console.error('ERROR:', error);
