@@ -46,24 +46,29 @@ export default class LibraryController {
             );
 
         const movies = await LibraryController.getMoviesInfo(rawMovies);
-        if (!movies) return returnErrorStatus(res, 502, StatusMessage.COULD_NOT_FETCH_MOVIES_INFO)
+        if (!movies)
+            return returnErrorStatus(
+                res,
+                502,
+                StatusMessage.COULD_NOT_FETCH_MOVIES_INFO
+            );
 
         return movies;
     }
 
     static async getMoviesInfo(rawMovies) {
-        const { TMDB_API_KEY } = process.env
+        const { TMDB_API_KEY } = process.env;
         const movies = [];
 
         for (const rawMovie of rawMovies) {
-            const tmdbSearchURL = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${rawMovie.title}&year=${rawMovie.year}`
+            const tmdbSearchURL = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${rawMovie.title}&year=${rawMovie.year}`;
             try {
                 const tmdbResponse = await axios.get(tmdbSearchURL);
-    
+
                 const movieData = tmdbResponse.data.results[0];
                 if (!movieData) continue;
-                const thumbnail = `https://image.tmdb.org/t/p/w185${movieData.poster_path}`
-    
+                const thumbnail = `https://image.tmdb.org/t/p/w185${movieData.poster_path}`;
+
                 const movie = {
                     title: movieData.original_title || 'N/A',
                     year: rawMovie.year || 'N/A',
@@ -71,8 +76,8 @@ export default class LibraryController {
                     rating: movieData.vote_average || 'N/A',
                     thumbnail: thumbnail || 'N/A',
                     isWatched: false, // TODO: Get this from our DB
-                    language: movieData.original_language
-                }
+                    language: movieData.original_language,
+                };
                 movies.push(movie);
             } catch (error) {
                 console.error('ERROR:', error);
