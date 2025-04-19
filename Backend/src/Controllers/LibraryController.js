@@ -5,6 +5,7 @@ import axios from 'axios';
 import { returnErrorStatus } from '../Utils/errorUtils.js';
 import { isValidSource, fetchRawMovies } from '../Utils/moviesUtils.js';
 import StatusMessage from '../Utils/StatusMessage.js';
+import watchedMoviesModel from '../Models/WatchedMoviesModel.js';
 
 export default class LibraryController {
     static ACCEPTED_SOURCES = {
@@ -12,6 +13,7 @@ export default class LibraryController {
     };
 
     static async library(req, res) {
+        const userId = req.session.user.id;
         const { source } = req.query;
         const page = req.params.page || 1;
 
@@ -26,6 +28,7 @@ export default class LibraryController {
 
         const movies = await LibraryController.ACCEPTED_SOURCES[source](
             res,
+            userId,
             page
         );
         if (!movies) return res;
@@ -33,7 +36,7 @@ export default class LibraryController {
         return res.json({ msg: movies });
     }
 
-    static async getArchiveLibrary(res, page) {
+    static async getArchiveLibrary(res, userId, page) {
         const rows = 10;
         const url = `https://archive.org/advancedsearch.php?q=collection%3Afeature_films+AND+mediatype%3Amovies+AND+date%3A%5B*+TO+2025-01-01%5D&fl%5B%5D=title&fl%5B%5D=year&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=identifier&sort%5B%5D=downloads+desc&rows=${rows}&page=${page}&output=json`;
 
@@ -45,7 +48,7 @@ export default class LibraryController {
                 StatusMessage.COULD_NOT_FETCH_MOVIES
             );
 
-        const movies = await LibraryController.getMoviesInfo(rawMovies);
+        const movies = await LibraryController.getMoviesInfo(userId, rawMovies);
         if (!movies)
             return returnErrorStatus(
                 res,
@@ -56,7 +59,7 @@ export default class LibraryController {
         return movies;
     }
 
-    static async getMoviesInfo(rawMovies) {
+    static async getMoviesInfo(userId, rawMovies) {
         const { TMDB_API_KEY } = process.env;
         const movies = [];
 
@@ -75,11 +78,11 @@ export default class LibraryController {
                     description: movieData.overview || 'N/A',
                     rating: movieData.vote_average || 'N/A',
                     thumbnail: thumbnail || 'N/A',
-                    isWatched: false, // TODO: Get this from our DB
+                    isWatched: await watchedMoviesModel.isMovieWatched(userId, rawMovie.identifier),
                     language: movieData.original_language,
                     downloads: rawMovie.downloads,
-                    identifier: rawMovie.identifier, // Used to build the torrent download URL
-                };
+                    identifier: rawMovie.identifier // Used to build the torrent download URL for archive.org
+                }
                 movies.push(movie);
             } catch (error) {
                 console.error('ERROR:', error);
