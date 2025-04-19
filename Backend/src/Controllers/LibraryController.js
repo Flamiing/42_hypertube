@@ -78,11 +78,14 @@ export default class LibraryController {
                     description: movieData.overview || 'N/A',
                     rating: movieData.vote_average || 'N/A',
                     thumbnail: thumbnail || 'N/A',
-                    isWatched: await watchedMoviesModel.isMovieWatched(userId, rawMovie.identifier),
+                    isWatched: await watchedMoviesModel.isMovieWatched(
+                        userId,
+                        rawMovie.identifier
+                    ),
                     language: movieData.original_language,
                     downloads: rawMovie.downloads,
-                    identifier: rawMovie.identifier // Used to build the torrent download URL for archive.org
-                }
+                    identifier: rawMovie.identifier, // Used to build the torrent download URL for archive.org
+                };
                 movies.push(movie);
             } catch (error) {
                 console.error('ERROR:', error);

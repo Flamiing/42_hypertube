@@ -7,17 +7,19 @@ class WatchedMoviesModel extends Model {
     }
 
     async isMovieWatched(userId, movieId) {
-
-        console.log('TEST USER ID:', userId)
-        console.log('TEST MOVIE ID:', movieId)
-        const result = await this.getByReference({
-            user_id: userId,
-            movie_id: movieId
-        }, false)
+        console.log('TEST USER ID:', userId);
+        console.log('TEST MOVIE ID:', movieId);
+        const result = await this.getByReference(
+            {
+                user_id: userId,
+                movie_id: movieId,
+            },
+            false
+        );
         if (!result) return false;
-        
+
         if (result.length === 0) return false;
-        
+
         return true;
     }
 }
