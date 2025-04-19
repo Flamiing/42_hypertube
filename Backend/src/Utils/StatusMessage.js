@@ -147,5 +147,5 @@ export default class StatusMessage {
         'There was an error fetching movies. Please try again later.';
     static COULD_NOT_FETCH_MOVIES_INFO =
         'There was an error fetching movies information. Please try again later.';
-    static SEARCH_QUERY_REQUIRED = 'Search query is required.'
+    static SEARCH_QUERY_REQUIRED = 'Search query is required.';
 }

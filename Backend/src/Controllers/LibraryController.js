@@ -14,9 +14,12 @@ export default class LibraryController {
 
     static async search(req, res) {
         const { query } = req.query;
-        if (!query) return res.status(400).json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED })
+        if (!query)
+            return res
+                .status(400)
+                .json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED });
 
-        return res.json({ msg: 'SEARCH' })
+        return res.json({ msg: 'SEARCH' });
     }
 
     static async library(req, res) {
