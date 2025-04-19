@@ -12,6 +12,13 @@ export default class LibraryController {
         'archive.org': LibraryController.getArchiveLibrary,
     };
 
+    static async search(req, res) {
+        const { query } = req.query;
+        if (!query) return res.status(400).json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED })
+
+        return res.json({ msg: 'SEARCH' })
+    }
+
     static async library(req, res) {
         const userId = req.session.user.id;
         const { source } = req.query;
