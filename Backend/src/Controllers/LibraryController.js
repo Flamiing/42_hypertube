@@ -1,3 +1,6 @@
+// Third-Party Imports:
+import axios from 'axios';
+
 // Local Imports:
 import { returnErrorStatus } from '../Utils/errorUtils.js';
 import { isValidSource, fetchRawMovies } from '../Utils/moviesUtils.js';
@@ -31,7 +34,7 @@ export default class LibraryController {
     }
 
     static async getArchiveLibrary(res, page) {
-        const rows = 50;
+        const rows = 10;
         const url = `https://archive.org/advancedsearch.php?q=collection%3Afeature_films+AND+mediatype%3Amovies+AND+date%3A%5B*+TO+2025-01-01%5D&fl%5B%5D=title&fl%5B%5D=year&fl%5B%5D=description&sort%5B%5D=downloads+desc&rows=${rows}&page=${page}&output=json`;
 
         const rawMovies = await fetchRawMovies(url);
@@ -42,19 +45,41 @@ export default class LibraryController {
                 StatusMessage.COULD_NOT_FETCH_MOVIES
             );
 
-        //const movies = await getMoviesInfo(rawMovies);
-        //if (!movies) return returnErrorStatus(res, 502, StatusMessage.COULD_NOT_FETCH_MOVIES_INFO)
+        const movies = await LibraryController.getMoviesInfo(rawMovies);
+        if (!movies) return returnErrorStatus(res, 502, StatusMessage.COULD_NOT_FETCH_MOVIES_INFO)
 
-        return rawMovies;
+        return movies;
     }
 
-    /* static async getMoviesInfo(rawMovies) {
+    static async getMoviesInfo(rawMovies) {
+        const { TMDB_API_KEY } = process.env
         const movies = [];
 
         for (const rawMovie of rawMovies) {
-            const movie = {
-
+            const tmdbSearchURL = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${rawMovie.title}&year=${rawMovie.year}`
+            try {
+                const tmdbResponse = await axios.get(tmdbSearchURL);
+    
+                const movieData = tmdbResponse.data.results[0];
+                if (!movieData) continue;
+                const thumbnail = `https://image.tmdb.org/t/p/w185${movieData.poster_path}`
+    
+                const movie = {
+                    title: movieData.original_title || 'N/A',
+                    year: rawMovie.year || 'N/A',
+                    description: movieData.overview || 'N/A',
+                    rating: movieData.vote_average || 'N/A',
+                    thumbnail: thumbnail || 'N/A',
+                    isWatched: false, // TODO: Get this from our DB
+                    language: movieData.original_language
+                }
+                movies.push(movie);
+            } catch (error) {
+                console.error('ERROR:', error);
+                return null;
             }
         }
-    } */
+
+        return movies;
+    }
 }

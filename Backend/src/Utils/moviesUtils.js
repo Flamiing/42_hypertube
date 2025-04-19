@@ -28,6 +28,5 @@ export async function fetchRawMovies(url) {
         return null;
     }
 
-    console.log('TEST:', rawMovies);
     return rawMovies;
 }
