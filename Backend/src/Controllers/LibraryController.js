@@ -16,7 +16,10 @@ export default class LibraryController {
         const userId = req.session.user.id;
         const page = req.params.page || 1;
         const { query, source } = req.query;
-        if (!query) return res.status(400).json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED })
+        if (!query)
+            return res
+                .status(400)
+                .json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED });
 
         if (
             !isValidSource(
@@ -35,7 +38,7 @@ export default class LibraryController {
         );
         if (!movies) return res;
 
-        return res.json({ msg: movies })
+        return res.json({ msg: movies });
     }
 
     static async library(req, res) {
