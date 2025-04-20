@@ -9,17 +9,33 @@ import watchedMoviesModel from '../Models/WatchedMoviesModel.js';
 
 export default class LibraryController {
     static ACCEPTED_SOURCES = {
-        'archive.org': LibraryController.getArchiveLibrary,
+        'archive.org': LibraryController.getArchiveMovies,
     };
 
     static async search(req, res) {
-        const { query } = req.query;
-        if (!query)
-            return res
-                .status(400)
-                .json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED });
+        const userId = req.session.user.id;
+        const page = req.params.page || 1;
+        const { query, source } = req.query;
+        if (!query) return res.status(400).json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED })
 
-        return res.json({ msg: 'SEARCH' });
+        if (
+            !isValidSource(
+                res,
+                Object.keys(LibraryController.ACCEPTED_SOURCES),
+                source
+            )
+        )
+            return res;
+
+        const movies = await LibraryController.ACCEPTED_SOURCES[source](
+            res,
+            userId,
+            page,
+            query
+        );
+        if (!movies) return res;
+
+        return res.json({ msg: movies })
     }
 
     static async library(req, res) {
@@ -39,16 +55,19 @@ export default class LibraryController {
         const movies = await LibraryController.ACCEPTED_SOURCES[source](
             res,
             userId,
-            page
+            page,
+            null
         );
         if (!movies) return res;
 
         return res.json({ msg: movies });
     }
 
-    static async getArchiveLibrary(res, userId, page) {
+    static async getArchiveMovies(res, userId, page, userQuery) {
         const rows = 10;
-        const url = `https://archive.org/advancedsearch.php?q=collection%3Afeature_films+AND+mediatype%3Amovies+AND+date%3A%5B*+TO+2025-01-01%5D&fl%5B%5D=title&fl%5B%5D=year&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=identifier&sort%5B%5D=downloads+desc&rows=${rows}&page=${page}&output=json`;
+        const search = userQuery ? `+AND+title%3A${userQuery}` : '';
+        const orderedBy = userQuery ? 'titleSorter+asc' : 'downloads+desc';
+        const url = `https://archive.org/advancedsearch.php?q=collection%3Afeature_films+AND+mediatype%3Amovies+AND+date%3A%5B*+TO+2025-01-01%5D${search}&fl%5B%5D=title&fl%5B%5D=year&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=identifier&sort%5B%5D=${orderedBy}&rows=${rows}&page=${page}&output=json`;
 
         const rawMovies = await fetchRawMovies(url);
         if (!rawMovies)

@@ -10,7 +10,7 @@ export default class MoviesRouter {
 
         // GET:
         router.get('/library/:page?', LibraryController.library);
-        router.get('/search', LibraryController.search);
+        router.get('/search/:page?', LibraryController.search);
 
         return router;
     }
