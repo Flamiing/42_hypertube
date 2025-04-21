@@ -10,8 +10,7 @@ const OauthGoogleButton: React.FC<OauthGoogleButtonProps> = ({
 	disabled = false,
 }) => {
 	const handleRedirect = () => {
-		window.location.href =
-			"https://accounts.google.com/o/oauth2/v2/auth?client_id=160018668974-1tfd98ha68bhtu5sasf6s7k9nr23rmjg.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/oauth/callback&response_type=code&scope=openid email profile&access_type=offline&prompt=consent";
+		window.location.href = import.meta.env.VITE_OAUTH_GOOGLE_URL;
 	};
 
 	return (

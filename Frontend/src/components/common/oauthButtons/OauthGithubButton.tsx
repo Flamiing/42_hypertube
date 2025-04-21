@@ -10,8 +10,7 @@ const OauthGithubButton: React.FC<OauthGithubButtonProps> = ({
 	disabled = false,
 }) => {
 	const handleRedirect = () => {
-		window.location.href =
-			"https://github.com/login/oauth/authorize?client_id=Ov23ligzxHo3I2lgY3fd&redirect_uri=http://localhost:3000/auth/oauth/callback&scope=user&allow_signup=true"
+		window.location.href = import.meta.env.VITE_OAUTH_GITHUB_URL;
 	};
 
 	return (
@@ -28,7 +27,7 @@ const OauthGithubButton: React.FC<OauthGithubButtonProps> = ({
 				alt="Github Logo"
 				className="w-5 h-5 invert"
 			/>
-			<span className="ms-2 h-fit">{action} with GtiHub</span>
+			<span className="ms-2 h-fit">{action} with GitHub</span>
 		</button>
 	);
 };

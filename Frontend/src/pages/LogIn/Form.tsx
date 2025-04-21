@@ -77,9 +77,18 @@ const LoginForm: React.FC = () => {
 				>
 					<div className="grid grid-cols-2 gap-4 w-full">
 						<Oauth42Button action="Login" disabled={isSubmitting} />
-						<OauthGithubButton action="Login" disabled={isSubmitting} />
-						<OauthGoogleButton action="Login" disabled={isSubmitting} />
-						<OauthTwitchButton action="Login" disabled={isSubmitting} />
+						<OauthGithubButton
+							action="Login"
+							disabled={isSubmitting}
+						/>
+						<OauthGoogleButton
+							action="Login"
+							disabled={isSubmitting}
+						/>
+						<OauthTwitchButton
+							action="Login"
+							disabled={isSubmitting}
+						/>
 					</div>
 					<p>Or enter your credentials to access your account</p>
 					<FormInput

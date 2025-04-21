@@ -10,8 +10,7 @@ const OauthTwitchButton: React.FC<OauthTwitchButtonProps> = ({
 	disabled = false,
 }) => {
 	const handleRedirect = () => {
-		window.location.href =
-			"https://id.twitch.tv/oauth2/authorize?client_id=2byqqpwcoa3plgznq5xczqfekztj8v&redirect_uri=http://localhost:3000/auth/oauth/callback&response_type=code&scope=openid%20user:read:email";
+		window.location.href = import.meta.env.VITE_OAUTH_TWITCH_URL;
 	};
 
 	return (
