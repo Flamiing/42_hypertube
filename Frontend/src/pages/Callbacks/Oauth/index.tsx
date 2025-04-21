@@ -15,6 +15,7 @@ const index: React.FC = () => {
 	useEffect(() => {
 		const authenticate = async () => {
 			const token = searchParams.get("code");
+			const provider = searchParams.get("provider");
 
 			if (!token) {
 				setPageMsg(
@@ -24,8 +25,20 @@ const index: React.FC = () => {
 				return;
 			}
 
+			if (!provider) {
+				setPageMsg("No provider found. Please try to login again.");
+				setError("text-red-400");
+				return;
+			}
+
+			if (!["github", "google", "twitch", "42"].includes(provider)) {
+				setPageMsg("Invalid provider. Please try to login again.");
+				setError("text-red-400");
+				return;
+			}
+
 			try {
-				const response = await oauth(token);
+				const response = await oauth(token, provider);
 
 				if (response.success) {
 					setPageMsg("Authentication successful! Redirecting...");

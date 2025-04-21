@@ -14,7 +14,7 @@ interface AuthContextType {
 	register: (data: RegisterData) => Promise<AuthResponse>;
 	login: (data: LoginData) => Promise<AuthResponse>;
 	logout: () => Promise<AuthResponse>;
-	oauth: (token: string) => Promise<AuthResponse>;
+	oauth: (token: string, provider: string) => Promise<AuthResponse>;
 	confirmEmail: (token: string) => Promise<AuthResponse>;
 	resetPassword: (
 		token: string,
@@ -88,8 +88,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		return response;
 	};
 
-	const oauth = async (token: string): Promise<AuthResponse> => {
-		const response = await authApi.oauth(token);
+	const oauth = async (token: string, provider: string): Promise<AuthResponse> => {
+		const response = await authApi.oauth(token, provider);
 		if (response.success && response.user) {
 			setUser(response.user);
 			setIsAuthenticated(true);
