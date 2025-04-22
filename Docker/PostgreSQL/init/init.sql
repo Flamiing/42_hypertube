@@ -24,6 +24,24 @@ CREATE TABLE images (
 	image_path VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE watched_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    movie_id VARCHAR(255) UNIQUE NOT NULL,
+    movie_title VARCHAR(255) DEFAULT NULL,
+    UNIQUE (user_id, movie_id)
+);
+
+CREATE TABLE scraped_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR(55),
+    movie_url VARCHAR(2048)
+);
+
 ALTER TABLE users
 ADD CONSTRAINT fk_profile_picture
 FOREIGN KEY (profile_picture) REFERENCES images(id) ON DELETE SET NULL;
+
+-- Index for faster queries
+CREATE INDEX idx_watched_movies_user_id ON watched_movies(user_id);
+CREATE INDEX idx_watched_movies_movie_id ON watched_movies(movie_id);
