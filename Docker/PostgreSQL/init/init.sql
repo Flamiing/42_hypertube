@@ -32,6 +32,12 @@ CREATE TABLE watched_movies (
     UNIQUE (user_id, movie_id)
 );
 
+CREATE TABLE scraped_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR(55),
+    movie_url VARCHAR(2048)
+);
+
 ALTER TABLE users
 ADD CONSTRAINT fk_profile_picture
 FOREIGN KEY (profile_picture) REFERENCES images(id) ON DELETE SET NULL;
