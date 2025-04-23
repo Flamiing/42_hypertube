@@ -30,11 +30,11 @@ async function scrapeMovies() {
         for (const movie of movies) {
             const result = await scrapedMoviesModel.create({ input: movie });
             if (!result) {
-                console.info('Movies were already scraped!')
-                process.exit()
+                console.info('Movies were already scraped!');
+                process.exit();
             }
 
-            console.info(`${movie.title} saved to the DB!`)
+            console.info(`${movie.title} saved to the DB!`);
         }
     } catch (error) {
         console.error('Scraping error:', error);
