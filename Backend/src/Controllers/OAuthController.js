@@ -54,6 +54,7 @@ export default class OAuthController {
             OAUTH_42_SECRET_KEY,
             TOKEN_ENDPOINT_42,
             USER_INFO_ENDPOINT_42,
+            CALLBACK_ROUTE_42
         } = process.env;
 
         const { code } = req.body;
@@ -64,7 +65,8 @@ export default class OAuthController {
                 OAUTH_42_SECRET_KEY,
                 code,
                 TOKEN_ENDPOINT_42,
-                USER_INFO_ENDPOINT_42
+                USER_INFO_ENDPOINT_42,
+                CALLBACK_ROUTE_42
             );
 
             const data = {
@@ -100,6 +102,7 @@ export default class OAuthController {
             OAUTH_GOOGLE_SECRET_KEY,
             TOKEN_ENDPOINT_GOOGLE,
             USER_INFO_ENDPOINT_GOOGLE,
+            CALLBACK_ROUTE_GOOGLE
         } = process.env;
 
         const { code } = req.body;
@@ -110,7 +113,8 @@ export default class OAuthController {
                 OAUTH_GOOGLE_SECRET_KEY,
                 code,
                 TOKEN_ENDPOINT_GOOGLE,
-                USER_INFO_ENDPOINT_GOOGLE
+                USER_INFO_ENDPOINT_GOOGLE,
+                CALLBACK_ROUTE_GOOGLE
             );
 
             const username = userInfo.email.split('@')[0];
@@ -148,6 +152,7 @@ export default class OAuthController {
             OAUTH_TWITCH_SECRET_KEY,
             TOKEN_ENDPOINT_TWITCH,
             USER_INFO_ENDPOINT_TWITCH,
+            CALLBACK_ROUTE_TWITCH
         } = process.env;
 
         const { code } = req.body;
@@ -158,7 +163,8 @@ export default class OAuthController {
                 OAUTH_TWITCH_SECRET_KEY,
                 code,
                 TOKEN_ENDPOINT_TWITCH,
-                USER_INFO_ENDPOINT_TWITCH
+                USER_INFO_ENDPOINT_TWITCH,
+                CALLBACK_ROUTE_TWITCH
             );
 
             const data = {
@@ -199,6 +205,7 @@ export default class OAuthController {
             OAUTH_GITHUB_SECRET_KEY,
             TOKEN_ENDPOINT_GITHUB,
             USER_INFO_ENDPOINT_GITHUB,
+            CALLBACK_ROUTE_GITHUB
         } = process.env;
 
         const { code } = req.body;
@@ -209,7 +216,8 @@ export default class OAuthController {
                 OAUTH_GITHUB_SECRET_KEY,
                 code,
                 TOKEN_ENDPOINT_GITHUB,
-                USER_INFO_ENDPOINT_GITHUB
+                USER_INFO_ENDPOINT_GITHUB,
+                CALLBACK_ROUTE_GITHUB
             );
 
             const data = {
@@ -247,7 +255,8 @@ export default class OAuthController {
         secretKey,
         code,
         tokenEndpoint,
-        userInfoEndpoint
+        userInfoEndpoint,
+        callbackRoute
     ) {
         const tokenResponse = await axios.post(
             tokenEndpoint,
@@ -256,7 +265,7 @@ export default class OAuthController {
                 client_id: clientId,
                 client_secret: secretKey,
                 code: code,
-                redirect_uri: process.env.CALLBACK_ROUTE,
+                redirect_uri: callbackRoute,
             },
             {
                 headers: {
