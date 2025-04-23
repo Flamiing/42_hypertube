@@ -35,7 +35,8 @@ CREATE TABLE watched_movies (
 CREATE TABLE scraped_movies (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     title VARCHAR(55),
-    movie_url VARCHAR(2048)
+    movie_url VARCHAR(2048),
+    UNIQUE (title, movie_url)
 );
 
 ALTER TABLE users
