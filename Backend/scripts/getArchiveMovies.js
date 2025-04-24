@@ -9,10 +9,13 @@ export async function getArchiveMovies(movieGenres) {
 
     const rawMovies = await fetchRawMovies(url);
 
+    let count = 1;
     for (const rawMovie of rawMovies) {
+        if (count > process.env.MOVIES_LIMIT) return;
         const TMDBMovieData = await getMovieData(rawMovie, movieGenres)
         if (!TMDBMovieData) continue;
         await moviesModel.create({ input: TMDBMovieData });
         console.info(`${TMDBMovieData.title} has been added to the DB.`)
+        count += 1;
     }
 }

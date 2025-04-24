@@ -56,12 +56,15 @@ async function scrapMovieData(movieURL) {
 }
 
 async function saveMoviesData(moviesURLs, movieGenres) {
+    let count = 1;
     for (const movieURL of moviesURLs) {
+        if (count > process.env.MOVIES_LIMIT) return;
         const scrapedMovieData = await scrapMovieData(movieURL);
         const TMDBMovieData = await getMovieData(scrapedMovieData, movieGenres);
         if (!TMDBMovieData) continue;
         await moviesModel.create({ input: TMDBMovieData });
-        console.info(`${TMDBMovieData.title} has been added to the DB.`);
+        console.info(`${TMDBMovieData.title} has been added to the DB.`)
+        count += 1;
     }
 }
 
