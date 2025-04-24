@@ -4,7 +4,6 @@ import { getPublicDomainTorrentsMovies } from './getPublicDomainTorrentsMovies.j
 
 // Local Imports:
 
-
 async function getMovieGenres() {
     const { TMDB_API_KEY } = process.env;
     const TMDBGenresURL = `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=en`;
@@ -31,4 +30,4 @@ async function saveMoviesToDB() {
 }
 
 await saveMoviesToDB();
-process.exit()
+process.exit();

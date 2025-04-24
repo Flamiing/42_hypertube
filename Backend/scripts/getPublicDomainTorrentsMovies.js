@@ -32,17 +32,16 @@ async function scrapMovieData(movieURL) {
     try {
         const { data } = await axios.get(movieURL);
         const $ = cheerio.load(data);
-        const scrapedMovieData = {}
+        const scrapedMovieData = {};
 
         $('tr td h3').each((_, element) => {
             scrapedMovieData['title'] = $(element).text().trim();
         });
 
-        
         $('tr td').each((_, element) => {
             const linkElement = $(element).find('a');
             if (linkElement.attr('href')?.includes('PSP.MP4.torrent')) {
-                scrapedMovieData['torrent_url'] = linkElement.attr('href')
+                scrapedMovieData['torrent_url'] = linkElement.attr('href');
             }
         });
 
@@ -55,7 +54,7 @@ async function scrapMovieData(movieURL) {
 async function getMoviesInfo(moviesURLs) {
     for (const movieURL of moviesURLs) {
         const scrapedMovieData = await scrapMovieData(movieURL);
-        const TMDBMovieData = await getTMDBMovieInfo
+        const TMDBMovieData = await getTMDBMovieInfo;
     }
 }
 
@@ -63,5 +62,4 @@ export async function getPublicDomainTorrentsMovies(movieGenres) {
     const moviesURLs = await getMoviesURL();
 
     const movies = await getMoviesInfo(moviesURLs);
-    
 }
