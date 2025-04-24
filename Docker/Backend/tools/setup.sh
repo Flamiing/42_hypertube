@@ -2,6 +2,8 @@
 
 npm install
 
+#npm run scrape-movies
+
 #if [ "$BACKEND_NODE_ENV" = "development" ]; then
 #  echo "Loading fixtures..."
 #  npm run fixtures
