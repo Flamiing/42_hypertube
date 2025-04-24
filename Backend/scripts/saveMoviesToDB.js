@@ -1,6 +1,7 @@
 // Third-Party Imports:
 import axios from 'axios';
 import { getPublicDomainTorrentsMovies } from './getPublicDomainTorrentsMovies.js';
+import { getArchiveMovies } from './getArchiveMovies.js';
 
 // Local Imports:
 
@@ -26,6 +27,7 @@ async function getMovieGenres() {
 async function saveMoviesToDB() {
     const movieGenres = await getMovieGenres();
 
+    await getArchiveMovies(movieGenres);
     await getPublicDomainTorrentsMovies(movieGenres);
 }
 
