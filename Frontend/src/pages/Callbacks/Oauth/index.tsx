@@ -15,7 +15,7 @@ const index: React.FC = () => {
 	useEffect(() => {
 		const authenticate = async () => {
 			const token = searchParams.get("code");
-			const provider = searchParams.get("provider");
+			let provider = searchParams.get("provider");
 
 			if (!token) {
 				setPageMsg(
@@ -26,9 +26,7 @@ const index: React.FC = () => {
 			}
 
 			if (!provider) {
-				setPageMsg("No provider found. Please try to login again.");
-				setError("text-red-400");
-				return;
+				provider = "42"; // Default to 42 if no provider is specified
 			}
 
 			if (!["github", "google", "twitch", "42"].includes(provider)) {
