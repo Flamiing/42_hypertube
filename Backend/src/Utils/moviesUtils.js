@@ -34,8 +34,8 @@ export async function fetchRawMovies(url) {
 
 export async function getMovieData(rawMovie, movieGenres) {
     const { TMDB_API_KEY } = process.env;
-    
-    const year = rawMovie.year ? `&year=${rawMovie.year}` : ''
+
+    const year = rawMovie.year ? `&year=${rawMovie.year}` : '';
     const TMDBSearchURL = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${rawMovie.title}${year}`;
     try {
         const tmdbResponse = await axios.get(TMDBSearchURL);
@@ -45,18 +45,24 @@ export async function getMovieData(rawMovie, movieGenres) {
         if (!movieData.poster_path) return null;
         const thumbnail = `https://image.tmdb.org/t/p/w185${movieData.poster_path}`;
 
-        const genres = movieData.genre_ids.map((genre_id) => movieGenres[genre_id] || 'Unknown');
+        const genres = movieData.genre_ids.map(
+            (genre_id) => movieGenres[genre_id] || 'Unknown'
+        );
 
         const movie = {
             title: movieData.original_title || 'N/A',
-            year: parseInt(rawMovie.year) || parseInt(movieData.release_date.slice(0, 4)),
+            year:
+                parseInt(rawMovie.year) ||
+                parseInt(movieData.release_date.slice(0, 4)),
             genres: genres,
             description: movieData.overview || 'N/A',
             rating: movieData.vote_average || 0,
             thumbnail: thumbnail || 'N/A',
             language: movieData.original_language,
             popularity: movieData.popularity,
-            torrent_url: rawMovie.identifier ? `https://archive.org/download/${rawMovie.identifier}/${rawMovie.identifier}_archive.torrent` : rawMovie.torrent_url,
+            torrent_url: rawMovie.identifier
+                ? `https://archive.org/download/${rawMovie.identifier}/${rawMovie.identifier}_archive.torrent`
+                : rawMovie.torrent_url,
         };
         return movie;
     } catch (error) {

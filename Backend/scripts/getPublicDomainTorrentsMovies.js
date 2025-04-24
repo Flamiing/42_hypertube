@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 
 // Local Imports:
-import { getMovieData } from '../src/Utils/moviesUtils.js'
+import { getMovieData } from '../src/Utils/moviesUtils.js';
 import moviesModel from '../src/Models/MoviesModel.js';
 
 const BASE_URL = 'https://www.publicdomaintorrents.info';
@@ -58,10 +58,10 @@ async function scrapMovieData(movieURL) {
 async function saveMoviesData(moviesURLs, movieGenres) {
     for (const movieURL of moviesURLs) {
         const scrapedMovieData = await scrapMovieData(movieURL);
-        const TMDBMovieData = await getMovieData(scrapedMovieData, movieGenres)
+        const TMDBMovieData = await getMovieData(scrapedMovieData, movieGenres);
         if (!TMDBMovieData) continue;
         await moviesModel.create({ input: TMDBMovieData });
-        console.info(`${TMDBMovieData.title} has been added to the DB.`)
+        console.info(`${TMDBMovieData.title} has been added to the DB.`);
     }
 }
 
