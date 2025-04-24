@@ -24,6 +24,40 @@ CREATE TABLE images (
 	image_path VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE watched_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    movie_id UUID REFERENCES movies(id) ON DELETE CASCADE,
+    movie_title VARCHAR(255) DEFAULT NULL,
+    UNIQUE (user_id, movie_id)
+);
+
+CREATE TABLE liked_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    movie_id UUID REFERENCES movies(id) ON DELETE CASCADE,
+    UNIQUE (user_id, movie_id)
+);
+
+CREATE TABLE movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    identifier VARCHAR UNIQUE NOT NULL,
+    title VARCHAR(55),
+    year INT,
+    genres VARCHAR[] DEFAULT '{}',
+    rating DOUBLE PRECISION,
+    thumbnail VARCHAR(2048),
+    description VARCHAR(2048),
+    language VARCHAR(2),
+    downloads INT,
+    torrent_url VARCHAR(2048),
+    UNIQUE (identifier, torrent_url)
+);
+
 ALTER TABLE users
 ADD CONSTRAINT fk_profile_picture
 FOREIGN KEY (profile_picture) REFERENCES images(id) ON DELETE SET NULL;
+
+-- Index for faster queries
+CREATE INDEX idx_watched_movies_user_id ON watched_movies(user_id);
+CREATE INDEX idx_watched_movies_movie_id ON watched_movies(movie_id);
