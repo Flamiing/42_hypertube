@@ -41,7 +41,6 @@ CREATE TABLE liked_movies (
 
 CREATE TABLE movies (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    identifier VARCHAR UNIQUE NOT NULL,
     title VARCHAR(55),
     year INT,
     genres VARCHAR[] DEFAULT '{}',
@@ -49,9 +48,8 @@ CREATE TABLE movies (
     thumbnail VARCHAR(2048),
     description VARCHAR(2048),
     language VARCHAR(2),
-    downloads INT,
-    torrent_url VARCHAR(2048),
-    UNIQUE (identifier, torrent_url)
+    popularity DOUBLE PRECISION,
+    torrent_url VARCHAR(2048)
 );
 
 ALTER TABLE users

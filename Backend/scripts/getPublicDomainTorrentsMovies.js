@@ -1,6 +1,10 @@
+// Third-Party Imports:
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import scrapedMoviesModel from '../src/Models/ScrapedMoviesModel.js';
+
+// Local Imports:
+import { getMovieData } from '../src/Utils/moviesUtils.js'
+import moviesModel from '../src/Models/MoviesModel.js';
 
 const BASE_URL = 'https://www.publicdomaintorrents.info';
 const CATEGORY_URL = `${BASE_URL}/nshowcat.html?category=ALL`;
@@ -51,15 +55,18 @@ async function scrapMovieData(movieURL) {
     }
 }
 
-async function getMoviesInfo(moviesURLs) {
+async function saveMoviesData(moviesURLs, movieGenres) {
     for (const movieURL of moviesURLs) {
         const scrapedMovieData = await scrapMovieData(movieURL);
-        const TMDBMovieData = await getTMDBMovieInfo;
+        const TMDBMovieData = await getMovieData(scrapedMovieData, movieGenres)
+        if (!TMDBMovieData) continue;
+        await moviesModel.create({ input: TMDBMovieData });
+        console.info(`${TMDBMovieData.title} has been added to the DB.`)
     }
 }
 
 export async function getPublicDomainTorrentsMovies(movieGenres) {
     const moviesURLs = await getMoviesURL();
 
-    const movies = await getMoviesInfo(moviesURLs);
+    await saveMoviesData(moviesURLs, movieGenres);
 }
