@@ -255,13 +255,7 @@ export default class Model {
         }
     }
 
-    async getPaginatedRecords(
-        page,
-        limit,
-        orderedBy,
-        order,
-        fields = ['*']
-    ) {
+    async getPaginatedRecords(page, limit, orderedBy, order, fields = ['*']) {
         const offset = (page - 1) * limit;
         const selectedFields = fields.join(', ');
 
