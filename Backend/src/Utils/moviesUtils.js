@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 // Local Imports:
-import watchedMovies from '../Models/WatchedMoviesModel.js'
-import likedMovies from '../Models/LikedMoviesModel.js'
+import watchedMovies from '../Models/WatchedMoviesModel.js';
+import likedMovies from '../Models/LikedMoviesModel.js';
 
 export async function fetchRawMovies(url) {
     const rawMovies = [];

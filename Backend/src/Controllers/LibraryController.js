@@ -18,7 +18,7 @@ export default class LibraryController {
             return res
                 .status(500)
                 .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
-        
+
         await getWatchAndLikeStatus(userId, movies);
 
         return res.json({ msg: movies });
@@ -38,7 +38,7 @@ export default class LibraryController {
             'thumbnail',
             'popularity',
             'language',
-            'genres'
+            'genres',
         ];
         const movies = await moviesModel.getPaginatedRecords(
             page,

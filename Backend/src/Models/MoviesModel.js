@@ -17,7 +17,7 @@ class MoviesModel extends Model {
             'thumbnail',
             'popularity',
             'language',
-            'genres'
+            'genres',
         ];
 
         const query = {
