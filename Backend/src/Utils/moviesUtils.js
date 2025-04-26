@@ -1,6 +1,10 @@
 // Third-Party Imports:
 import axios from 'axios';
 
+// Local Imports:
+import watchedMovies from '../Models/WatchedMoviesModel.js'
+import likedMovies from '../Models/LikedMoviesModel.js'
+
 export async function fetchRawMovies(url) {
     const rawMovies = [];
 
@@ -52,5 +56,14 @@ export async function getMovieData(rawMovie, movieGenres) {
     } catch (error) {
         console.error('ERROR:', error);
         return null;
+    }
+}
+
+export async function getWatchAndLikeStatus(userId, movies) {
+    for (const movie of movies) {
+        const isWatched = await watchedMovies.isMovieWatched(userId, movie.id);
+        movie.isWatched = isWatched;
+        const isLiked = await likedMovies.isMovieLiked(userId, movie.id);
+        movie.isLiked = isLiked;
     }
 }

@@ -24,21 +24,6 @@ CREATE TABLE images (
 	image_path VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE watched_movies (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    movie_id UUID REFERENCES movies(id) ON DELETE CASCADE,
-    movie_title VARCHAR(255) DEFAULT NULL,
-    UNIQUE (user_id, movie_id)
-);
-
-CREATE TABLE liked_movies (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    movie_id UUID REFERENCES movies(id) ON DELETE CASCADE,
-    UNIQUE (user_id, movie_id)
-);
-
 CREATE TABLE movies (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     title VARCHAR(55),
@@ -50,6 +35,20 @@ CREATE TABLE movies (
     language VARCHAR(2),
     popularity DOUBLE PRECISION,
     torrent_url VARCHAR(2048)
+);
+
+CREATE TABLE watched_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    movie_id UUID REFERENCES movies(id) ON DELETE CASCADE,
+    UNIQUE (user_id, movie_id)
+);
+
+CREATE TABLE liked_movies (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    movie_id UUID REFERENCES movies(id) ON DELETE CASCADE,
+    UNIQUE (user_id, movie_id)
 );
 
 ALTER TABLE users
