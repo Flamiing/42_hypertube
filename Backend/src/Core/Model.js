@@ -239,4 +239,46 @@ export default class Model {
             return null;
         }
     }
+
+    async countRecordsInTable() {
+        const query = {
+            text: `SELECT COUNT(*) FROM ${this.table};`,
+        };
+
+        try {
+            const result = await this.db.query(query);
+            if (result.rows.length === 0) return 0;
+            return parseInt(result.rows[0].count);
+        } catch (error) {
+            console.error('Error making the query: ', error.message);
+            return null;
+        }
+    }
+
+    async getPaginatedRecords(
+        page,
+        limit,
+        orderedBy,
+        order,
+        fields = ['*']
+    ) {
+        const offset = (page - 1) * limit;
+        const selectedFields = fields.join(', ');
+
+        const query = {
+            text: `SELECT ${selectedFields} FROM ${this.table} ORDER BY ${orderedBy} ${order} LIMIT ${limit} OFFSET $1;`,
+            values: [offset],
+        };
+
+        console.log('TEST:', query);
+
+        try {
+            const result = await this.db.query(query);
+            if (result.rows.length === 0) return [];
+            return result.rows;
+        } catch (error) {
+            console.error('Error making the query: ', error.message);
+            return null;
+        }
+    }
 }

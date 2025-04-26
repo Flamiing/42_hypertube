@@ -1,6 +1,5 @@
 // Third-Party Imports:
 import axios from 'axios';
-import qs from 'qs';
 
 // Local Imports:
 import userModel from '../Models/UserModel.js';
