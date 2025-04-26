@@ -242,7 +242,7 @@ export default class Model {
 
     async countRecordsInTable() {
         const query = {
-            text: `SELECT COUNT(*) FROM ${this.table};`
+            text: `SELECT COUNT(*) FROM ${this.table};`,
         };
 
         try {

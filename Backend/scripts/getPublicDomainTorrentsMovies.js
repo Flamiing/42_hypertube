@@ -63,7 +63,7 @@ async function saveMoviesData(moviesURLs, movieGenres) {
         const TMDBMovieData = await getMovieData(scrapedMovieData, movieGenres);
         if (!TMDBMovieData) continue;
         await moviesModel.create({ input: TMDBMovieData });
-        console.info(`${TMDBMovieData.title} has been added to the DB.`)
+        console.info(`${TMDBMovieData.title} has been added to the DB.`);
         count += 1;
     }
 }
