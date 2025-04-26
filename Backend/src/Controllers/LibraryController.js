@@ -18,10 +18,19 @@ export default class LibraryController {
             'year',
             'rating',
             'thumbnail',
-            'popularity'
+            'popularity',
         ];
-        const movies = await moviesModel.getPaginatedRecords(page, 6, 'popularity', 'DESC', fields);
-        if (!movies) return res.status(500).json({ msg: StatusMessage.INTERNAL_SERVER_ERROR })
+        const movies = await moviesModel.getPaginatedRecords(
+            page,
+            6,
+            'popularity',
+            'DESC',
+            fields
+        );
+        if (!movies)
+            return res
+                .status(500)
+                .json({ msg: StatusMessage.INTERNAL_SERVER_ERROR });
 
         return res.json({ msg: movies });
     }
