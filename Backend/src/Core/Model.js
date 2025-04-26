@@ -255,16 +255,22 @@ export default class Model {
         }
     }
 
-    async getPaginatedRecords(page, limit, orderedBy, order = 'DESC', fields = ['*']) {
+    async getPaginatedRecords(
+        page,
+        limit,
+        orderedBy,
+        order = 'DESC',
+        fields = ['*']
+    ) {
         const offset = (page - 1) * limit;
         const selectedFields = fields.join(', ');
-        
+
         const query = {
             text: `SELECT ${selectedFields} FROM ${this.table} ORDER BY ${orderedBy} ${order} LIMIT ${limit} OFFSET $1;`,
-            values: [offset]
+            values: [offset],
         };
 
-        console.log('TEST:', query)
+        console.log('TEST:', query);
 
         try {
             const result = await this.db.query(query);
