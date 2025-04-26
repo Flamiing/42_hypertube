@@ -6,7 +6,7 @@ import { getArchiveMovies } from './getArchiveMovies.js';
 // Local Imports:
 import moviesModel from '../src/Models/MoviesModel.js';
 
-async function saveMoviesToDB() {
+async function getMoviesData() {
     const movieGenres = await getMovieGenres();
 
     if (await areMoviesInDB()) {
@@ -42,5 +42,5 @@ async function areMoviesInDB() {
     return false;
 }
 
-await saveMoviesToDB();
+await getMoviesData();
 process.exit();
