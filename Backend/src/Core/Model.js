@@ -259,7 +259,7 @@ export default class Model {
         page,
         limit,
         orderedBy,
-        order = 'DESC',
+        order,
         fields = ['*']
     ) {
         const offset = (page - 1) * limit;
