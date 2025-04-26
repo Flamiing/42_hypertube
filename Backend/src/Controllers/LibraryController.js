@@ -11,7 +11,7 @@ export default class LibraryController {
             return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
         const { q } = req.query;
-        if (!q) return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
+        if (!q) return res.status(400).json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED });
 
         const movies = await moviesModel.searchMovie(page, 6, q);
         if (!movies)
