@@ -5,12 +5,13 @@ import moviesModel from '../Models/MoviesModel.js';
 export default class LibraryController {
     static async search(req, res) {
         const { page } = req.params;
-        if (isNaN(page)) return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
+        if (isNaN(page))
+            return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
         const { q } = req.query;
         if (!q) return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
-        const movies = await moviesModel.searchMovie(page, 6, q)
+        const movies = await moviesModel.searchMovie(page, 6, q);
         if (!movies)
             return res
                 .status(500)
