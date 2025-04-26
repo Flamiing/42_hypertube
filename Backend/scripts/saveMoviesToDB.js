@@ -4,6 +4,18 @@ import { getPublicDomainTorrentsMovies } from './getPublicDomainTorrentsMovies.j
 import { getArchiveMovies } from './getArchiveMovies.js';
 
 // Local Imports:
+import moviesModel from '../src/Models/MoviesModel.js';
+
+async function saveMoviesToDB() {
+    const movieGenres = await getMovieGenres();
+
+    if (await areMoviesInDB()) {
+        console.info('The DB already has movies.');
+        process.exit();
+    }
+    await getArchiveMovies(movieGenres);
+    await getPublicDomainTorrentsMovies(movieGenres);
+}
 
 async function getMovieGenres() {
     const { TMDB_API_KEY } = process.env;
@@ -24,11 +36,10 @@ async function getMovieGenres() {
     }
 }
 
-async function saveMoviesToDB() {
-    const movieGenres = await getMovieGenres();
-
-    await getArchiveMovies(movieGenres);
-    await getPublicDomainTorrentsMovies(movieGenres);
+async function areMoviesInDB() {
+    const result = await moviesModel.countRecordsInTable();
+    if (result > 0) return true;
+    return false;
 }
 
 await saveMoviesToDB();

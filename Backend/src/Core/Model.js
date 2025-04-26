@@ -239,4 +239,19 @@ export default class Model {
             return null;
         }
     }
+
+    async countRecordsInTable() {
+        const query = {
+            text: `SELECT COUNT(*) FROM ${this.table};`
+        };
+
+        try {
+            const result = await this.db.query(query);
+            if (result.rows.length === 0) return 0;
+            return parseInt(result.rows[0].count);
+        } catch (error) {
+            console.error('Error making the query: ', error.message);
+            return null;
+        }
+    }
 }
