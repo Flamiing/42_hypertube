@@ -11,7 +11,6 @@ export default class LibraryController {
             return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
         const movie = await moviesModel.getById({ id });
-        console.log('TEST - 84554117-1237-4f13-9221-606e5655da33:', id);
         if (!movie)
             return res
                 .status(500)
