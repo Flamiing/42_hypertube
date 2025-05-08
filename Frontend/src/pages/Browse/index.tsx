@@ -6,11 +6,12 @@ import Spinner from "../../components/common/Spinner";
 import SortSection from "./SortSection";
 import FilterSection from "./FilterSection";
 import calculateAge from "../../utils/calculateAge";
+import ThumbnailBox from "./ThumbnailBox";
 
 const index = () => {
 	const { user } = useAuth();
 	const { profile } = useProfile(user?.id || "");
-	const { getUserDistance, getBrowseUsers, loading, error } = useUsers();
+	/* const { getUserDistance, getBrowseUsers, loading, error } = useUsers();
 	const [users, setUsers] = useState([]);
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [sortBy, setSortBy] = useState("fame");
@@ -22,9 +23,68 @@ const index = () => {
 		minAge: null,
 		maxDistance: null,
 		minFame: null,
-	});
+	}); */
 
-	const applyFilters = (users, filters) => {
+	const movies = [
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+		{
+			id: "oppenheimer",
+			name: "Oppenheimer",
+			year: "2023",
+			rating: 8.5,
+			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
+		},
+	];
+
+	/* const applyFilters = (users, filters) => {
 		// If all filters are null or empty, return all users
 		const hasActiveFilters = Object.values(filters).some((value) => {
 			if (Array.isArray(value)) {
@@ -183,20 +243,21 @@ const index = () => {
 		};
 
 		if (profile) fetchUsersAndCalculateDistances();
-	}, [profile]);
+	}, [profile]); */
 
-	if (loading) return <Spinner />;
-	if (error)
+	/* if (loading) return <Spinner />; */
+	/* if (error)
 		return (
 			<main className="flex flex-1 justify-center items-center flex-col">
 				<div>An error occurred when loading the browse page</div>
 			</main>
-		);
+		); */
 	if (!user || !profile) return <div>Error: User not found</div>;
 
 	return (
 		<main className="flex flex-1 justify-center items-center flex-col w-full my-10">
-			<section className="container max-w-7xl px-4 flex flex-col w-full items-center xl:items-start gap-6">
+			<h1>Library</h1>
+			{/* <section className="container max-w-7xl px-4 flex flex-col w-full items-center xl:items-start gap-6">
 				<h1 className="text-4xl font-bold">Browse</h1>
 				<FilterSection onFilterChange={handleFilterChange} />
 				<SortSection
@@ -204,11 +265,11 @@ const index = () => {
 					sortBy={sortBy}
 					sortOrder={sortOrder}
 				/>
-			</section>
+			</section> */}
 			{/* Users Grid */}
 			<section className="container max-w-7xl px-4 flex flex-row justify-between w-full items-center flex-grow">
 				<div className="flex flex-wrap md:justify-start justify-center gap-x-8 gap-y-10 w-full">
-					{noUsersFound ? (
+					{/* {noUsersFound ? (
 						<h2 className="col-span-full text-center text-xl font-bold w-full">
 							There are no interesting profiles for you. We are
 							sorry :(
@@ -219,7 +280,11 @@ const index = () => {
 								No users fit the criteria
 							</h2>
 						)
-					)}
+					)} */}
+					{movies.map((movie, index) => (
+						<ThumbnailBox key={index} movie={movie} />
+					))}
+					<div>TEST</div>
 				</div>
 			</section>
 		</main>
