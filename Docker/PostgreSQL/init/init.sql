@@ -34,7 +34,9 @@ CREATE TABLE movies (
     description VARCHAR(2048),
     language VARCHAR(2),
     popularity DOUBLE PRECISION,
-    torrent_url VARCHAR(2048)
+    torrent_url VARCHAR(2048),
+    file_name VARCHAR(512) DEFAULT NULL,
+    downloaded BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE watched_movies (
