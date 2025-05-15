@@ -1,14 +1,22 @@
 // Local Imports:
 import Model from '../Core/Model.js';
+import { getSearchValues, getMoviesOrder } from '../Utils/moviesUtils.js';
 
 class MoviesModel extends Model {
     constructor() {
         super('movies');
     }
 
-    async searchMovie(page, limit, search) {
-        const searchPattern = `%${search}%`;
+    async searchMovies(page, limit, userQuery) {
+        const searchPattern = `%${userQuery}%`;
         const offset = (page - 1) * limit;
+        const orderedBy = getMoviesOrder(userQuery.orderedBy);
+        if (!orderedBy) return null;
+
+        const result = getSearchValues(userQuery);
+        const searchQueries = result.searchQueries;
+        let values = result.values;
+        console.log('TEST: ', result);
         const fields = [
             'id',
             'title',
@@ -20,10 +28,15 @@ class MoviesModel extends Model {
             'genres',
         ];
 
+        values.push(offset);
+        const offsetReference = `$${values.length}`;
+
         const query = {
-            text: `SELECT ${fields} FROM ${this.table} WHERE title ILIKE $1 ORDER BY title DESC LIMIT ${limit} OFFSET $2;`,
-            values: [searchPattern, offset],
+            text: `SELECT ${fields} FROM ${this.table} WHERE ${searchQueries} ORDER BY ${orderedBy} DESC LIMIT ${limit} OFFSET ${offsetReference};`,
+            values: values,
         };
+
+        console.log('TEST QUERY:', query.text);
 
         try {
             const result = await this.db.query(query);
