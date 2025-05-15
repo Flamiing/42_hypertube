@@ -10,13 +10,7 @@ export default class LibraryController {
         if (isNaN(page))
             return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
-        const { q } = req.query;
-        if (!q)
-            return res
-                .status(400)
-                .json({ msg: StatusMessage.SEARCH_QUERY_REQUIRED });
-
-        const movies = await moviesModel.searchMovie(page, 6, q);
+        const movies = await moviesModel.searchMovies(page, 6, req.query);
         if (!movies)
             return res
                 .status(500)

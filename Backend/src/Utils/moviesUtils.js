@@ -67,3 +67,44 @@ export async function getWatchAndLikeStatus(userId, movies) {
         movie.isLiked = isLiked;
     }
 }
+
+export function getSearchValues(userQuery) {
+    const searches = {
+        title: userQuery.title,
+        year: userQuery.year,
+        language: userQuery.language,
+        genres: userQuery.genres
+    }
+    
+    let values = [];
+    let searchQueries = '';
+    for (const key in searches) {
+        const search = searches[key];
+        if (searches[key]) {
+            values.push(`%${search}%`);
+            if (searchQueries) searchQueries += ' AND ';
+            const field = key != 'year' ? key : 'CAST(year AS TEXT)'
+            searchQueries += `${field} ILIKE $${values.length}`
+        }
+    }
+
+    const result = {
+        values: values,
+        searchQueries: searchQueries
+    }
+    return result;
+}
+
+export function getMoviesOrder(order) {
+    const VALID_ORDERED_BY_FIELDS = [
+        'title',
+        'year',
+        'rating',
+        'popularity',
+        'language',
+        'genres'
+    ]
+    const orderedBy = order ? order : 'title';
+    if (orderedBy && !VALID_ORDERED_BY_FIELDS.includes(orderedBy)) return null;
+    return orderedBy
+}
