@@ -75,3 +75,4 @@ backend/build/
 # Ignore build folder for frontend
 dist/
 uploads
+downloads
