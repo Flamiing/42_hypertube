@@ -73,9 +73,9 @@ export function getSearchValues(userQuery) {
         title: userQuery.title,
         year: userQuery.year,
         language: userQuery.language,
-        genres: userQuery.genres
-    }
-    
+        genres: userQuery.genres,
+    };
+
     let values = [];
     let searchQueries = '';
     for (const key in searches) {
@@ -83,15 +83,15 @@ export function getSearchValues(userQuery) {
         if (searches[key]) {
             values.push(`%${search}%`);
             if (searchQueries) searchQueries += ' AND ';
-            const field = key != 'year' ? key : 'CAST(year AS TEXT)'
-            searchQueries += `${field} ILIKE $${values.length}`
+            const field = key != 'year' ? key : 'CAST(year AS TEXT)';
+            searchQueries += `${field} ILIKE $${values.length}`;
         }
     }
 
     const result = {
         values: values,
-        searchQueries: searchQueries
-    }
+        searchQueries: searchQueries,
+    };
     return result;
 }
 
@@ -102,9 +102,9 @@ export function getMoviesOrder(order) {
         'rating',
         'popularity',
         'language',
-        'genres'
-    ]
+        'genres',
+    ];
     const orderedBy = order ? order : 'title';
     if (orderedBy && !VALID_ORDERED_BY_FIELDS.includes(orderedBy)) return null;
-    return orderedBy
+    return orderedBy;
 }

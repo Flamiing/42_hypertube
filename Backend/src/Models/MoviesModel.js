@@ -36,7 +36,7 @@ class MoviesModel extends Model {
             values: values,
         };
 
-        console.log('TEST QUERY:', query.text)
+        console.log('TEST QUERY:', query.text);
 
         try {
             const result = await this.db.query(query);
