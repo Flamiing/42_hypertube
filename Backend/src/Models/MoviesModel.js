@@ -1,6 +1,10 @@
 // Local Imports:
 import Model from '../Core/Model.js';
-import { getSearchValues, getMoviesOrder, getOrderType } from '../Utils/moviesUtils.js';
+import {
+    getSearchValues,
+    getMoviesOrder,
+    getOrderType,
+} from '../Utils/moviesUtils.js';
 
 class MoviesModel extends Model {
     constructor() {
@@ -13,7 +17,7 @@ class MoviesModel extends Model {
         const orderType = getOrderType(userQuery.orderType);
 
         const result = getSearchValues(userQuery);
-        console.log('TEST:', result)
+        console.log('TEST:', result);
         const searchQueries = result.searchQueries;
         let values = result.values;
 
