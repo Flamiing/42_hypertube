@@ -16,6 +16,8 @@ volumes:
 	@mkdir -p $(POSTGRESQL_VOLUME_PATH)
 	@mkdir -p $(UPLOADS_PATH)
 	@mkdir -p $(UPLOADS_PATH)/users
+	@mkdir -p $(DOWNLOADS_PATH)
+	@mkdir -p $(DOWNLOADS_PATH)/movies
 
 build: volumes
 	@echo "$(GREEN)<+> BUILDING CONTAINERS <+> $(COLOR_OFF)"
@@ -49,6 +51,7 @@ remove_data:
 	@echo "$(GREEN)<+> REMOVING DATA <+> $(COLOR_OFF)"
 	@rm -rf $(DATA_PATH)
 	@rm -rf $(UPLOADS_PATH)
+	@rm -rf $(DOWNLOADS_PATH)
 
 destroy: down remove_data
 	@echo "$(GREEN)<+> REMOVING ALL IMAGES <+> $(COLOR_OFF)"

@@ -37,6 +37,7 @@ services:
         volumes:
             - ./Backend:/backend
             - ./uploads:/uploads
+            - ./downloads:/downloads
         networks:
             - hypertube-network
         environment:
