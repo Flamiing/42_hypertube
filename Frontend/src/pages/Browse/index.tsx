@@ -205,16 +205,15 @@ const index = () => {
 	/* if (error)
 		return (
 			<main className="flex flex-1 justify-center items-center flex-col">
-				<div>An error occurred when loading the browse page</div>
+				<div>An error occurred when loading the library page</div>
 			</main>
 		); */
 	if (!user || !profile) return <div>Error: User not found</div>;
 
 	return (
 		<main className="flex flex-1 justify-center items-center flex-col w-full my-10">
-			<h1>Library</h1>
+			<h1 className="text-4xl font-bold">Library</h1>
 			{/* <section className="container max-w-7xl px-4 flex flex-col w-full items-center xl:items-start gap-6">
-				<h1 className="text-4xl font-bold">Browse</h1>
 				<FilterSection onFilterChange={handleFilterChange} />
 				<SortSection
 					sortUsers={handleSort}
@@ -236,11 +235,17 @@ const index = () => {
 							</h2>
 						)
 					)} */}
+
+					{movies.length === 0 && (
+						<h2 className="col-span-full text-center text-xl font-bold w-full">
+							There are no movies to show. Try changing your
+							filters.
+						</h2>
+					)}
 					{Array.isArray(movies) &&
 						movies.map((movie, index) => (
 							<ThumbnailBox key={index} movie={movie} />
 						))}
-
 					{hasMore && !initialLoad && (
 						<div
 							ref={loadingRef}
