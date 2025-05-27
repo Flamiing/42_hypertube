@@ -26,13 +26,21 @@ const ThumbnailBox: React.FC = ({ movie }) => {
 					</>
 				)}
 			</h2>
-			{movie.rating && movie.rating > 0 && (
-				<p className="mt-2">
-					<span className="text-yellow-400 mr-1">★</span>
-					<span>{Math.round(movie.rating * 10) / 10}</span>
-					<span className="text-gray-400">/{"10"}</span>
-				</p>
-			)}
+			<div className="flex mt-2 gap-4 items-center">
+				{movie.rating && movie.rating > 0 && (
+					<p>
+						<i className="fa fa-star font-bold text-sm text-yellow-400 mr-1" />
+						<span>{Math.round(movie.rating * 10) / 10}</span>
+						<span className="text-gray-400">/{"10"}</span>
+					</p>
+				)}
+				{movie.isWatched && (
+					<i className="fa fa-eye font-bold text-blue-400" />
+				)}
+				{movie.isLiked && (
+					<i className="fa fa-heart font-bold text-red-500" />
+				)}
+			</div>
 		</div>
 	);
 };

@@ -18,14 +18,14 @@ const index = () => {
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [sortBy, setSortBy] = useState("fame");
 	const [sortOrder, setSortOrder] = useState("asc");
-	const [userDistances, setUserDistances] = useState({});
-	const [noUsersFound, setNoUsersFound] = useState(false);
+	const [noUsersFound, setNoUsersFound] = useState(false); */
 	const [activeFilters, setActiveFilters] = useState({
-		maxAge: null,
-		minAge: null,
-		maxDistance: null,
-		minFame: null,
-	}); */
+		title: null,
+		year: null,
+		rating: null,
+		popularity: null,
+		language: null,
+	});
 
 	const { getLibrary } = useLibrary();
 
@@ -208,7 +208,21 @@ const index = () => {
 				<div>An error occurred when loading the library page</div>
 			</main>
 		); */
-	if (!user || !profile) return <div>Error: User not found</div>;
+	if (!user || !profile) {
+		return (
+			<main className="flex flex-1 justify-center items-center flex-col">
+				<div className="text-xl font-bold">
+					You need to be logged in to view the library.
+				</div>
+			</main>
+		);
+	}
+
+	if (movies.length > 0) {
+		movies[0] = { ...movies[0], isWatched: true, isLiked: true };
+	}
+
+	console.log("Movies loaded:", movies);
 
 	return (
 		<main className="flex flex-1 justify-center items-center flex-col w-full my-10">
@@ -223,25 +237,14 @@ const index = () => {
 			</section> */}
 			<section className="container max-w-7xl pt-10 px-4 flex flex-row justify-between w-full items-center flex-grow">
 				<div className="flex flex-wrap md:justify-start justify-center gap-x-8 gap-y-10 w-full">
-					{/* {noUsersFound ? (
-						<h2 className="col-span-full text-center text-xl font-bold w-full">
-							There are no interesting profiles for you. We are
-							sorry :(
-						</h2>
-					) : (
-						filteredUsers.length === 0 && (
-							<h2 className="col-span-full text-center text-xl font-bold w-full">
-								No users fit the criteria
-							</h2>
-						)
-					)} */}
-
+					{/* No movies to load */}
 					{movies.length === 0 && (
 						<h2 className="col-span-full text-center text-xl font-bold w-full">
 							There are no movies to show. Try changing your
 							filters.
 						</h2>
 					)}
+					{/* Loaded movies and infinite scroll */}
 					{Array.isArray(movies) &&
 						movies.map((movie, index) => (
 							<ThumbnailBox key={index} movie={movie} />
