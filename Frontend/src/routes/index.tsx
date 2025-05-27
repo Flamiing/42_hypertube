@@ -23,8 +23,8 @@ const protectedRoutes = {
 			</ProtectedRoute>
 		),
 	},
-	browse: {
-		path: "browse",
+	library: {
+		path: "library",
 		element: (
 			<ProtectedRoute>
 				<Browse />

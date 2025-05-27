@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useUsers } from "../../hooks/PageData/useUsers";
 import { useProfile } from "../../hooks/PageData/useProfile";
 import { useAuth } from "../../context/AuthContext";
+import { useLibrary } from "../../hooks/PageData/useLibrary";
 import Spinner from "../../components/common/Spinner";
 import SortSection from "./SortSection";
 import FilterSection from "./FilterSection";
 import calculateAge from "../../utils/calculateAge";
 import ThumbnailBox from "./ThumbnailBox";
+import MsgCard from "../../components/common/MsgCard";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 
 const index = () => {
 	const { user } = useAuth();
@@ -25,64 +27,18 @@ const index = () => {
 		minFame: null,
 	}); */
 
-	const movies = [
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-		{
-			id: "oppenheimer",
-			name: "Oppenheimer",
-			year: "2023",
-			rating: 8.5,
-			img: "https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_QL75_UX380_CR0,0,380,562_.jpg",
-		},
-	];
+	const { getLibrary } = useLibrary();
+
+	const {
+		items: movies,
+		loading,
+		hasMore,
+		loadingRef,
+		initialLoad,
+	} = useInfiniteScroll({
+		fetchPage: getLibrary,
+		initialPage: 1,
+	});
 
 	/* const applyFilters = (users, filters) => {
 		// If all filters are null or empty, return all users
@@ -266,8 +222,7 @@ const index = () => {
 					sortOrder={sortOrder}
 				/>
 			</section> */}
-			{/* Users Grid */}
-			<section className="container max-w-7xl px-4 flex flex-row justify-between w-full items-center flex-grow">
+			<section className="container max-w-7xl pt-10 px-4 flex flex-row justify-between w-full items-center flex-grow">
 				<div className="flex flex-wrap md:justify-start justify-center gap-x-8 gap-y-10 w-full">
 					{/* {noUsersFound ? (
 						<h2 className="col-span-full text-center text-xl font-bold w-full">
@@ -281,10 +236,19 @@ const index = () => {
 							</h2>
 						)
 					)} */}
-					{movies.map((movie, index) => (
-						<ThumbnailBox key={index} movie={movie} />
-					))}
-					<div>TEST</div>
+					{Array.isArray(movies) &&
+						movies.map((movie, index) => (
+							<ThumbnailBox key={index} movie={movie} />
+						))}
+
+					{hasMore && !initialLoad && (
+						<div
+							ref={loadingRef}
+							className="w-full flex justify-center py-8"
+						>
+							{loading && <Spinner />}
+						</div>
+					)}
 				</div>
 			</section>
 		</main>
