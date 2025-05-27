@@ -5,10 +5,11 @@ import { useLibrary } from "../../hooks/PageData/useLibrary";
 import Spinner from "../../components/common/Spinner";
 import SortSection from "./SortSection";
 import FilterSection from "./FilterSection";
+import Search from "./Search";
 import calculateAge from "../../utils/calculateAge";
 import ThumbnailBox from "./ThumbnailBox";
-import MsgCard from "../../components/common/MsgCard";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import MsgCard from "../../components/common/MsgCard";
 
 const index = () => {
 	const { user } = useAuth();
@@ -32,6 +33,7 @@ const index = () => {
 	const {
 		items: movies,
 		loading,
+		error,
 		hasMore,
 		loadingRef,
 		initialLoad,
@@ -131,36 +133,6 @@ const index = () => {
 		});
 	};
 
-	const calculateDistances = async (users, profileLocation) => {
-		const distances = {};
-		for (const user of users) {
-			if (user.location && profileLocation) {
-				try {
-					const location1 = { ...user.location };
-					const location2 = { ...profileLocation };
-
-					// Remove allows_location before sending to API
-					delete location1.allows_location;
-					delete location2.allows_location;
-
-					const distance = await getUserDistance(
-						location1,
-						location2
-					);
-					distances[user.id] = distance;
-				} catch (error) {
-					console.error(
-						`Error calculating distance for user ${user.id}:`,
-						error
-					);
-					distances[user.id] = null;
-				}
-			} else {
-				distances[user.id] = null;
-			}
-		}
-		return distances;
-	};
 
 	const handleSort = (criteria) => {
 		const newSortOrder =
@@ -201,23 +173,6 @@ const index = () => {
 		if (profile) fetchUsersAndCalculateDistances();
 	}, [profile]); */
 
-	/* if (loading) return <Spinner />; */
-	/* if (error)
-		return (
-			<main className="flex flex-1 justify-center items-center flex-col">
-				<div>An error occurred when loading the library page</div>
-			</main>
-		); */
-	if (!user || !profile) {
-		return (
-			<main className="flex flex-1 justify-center items-center flex-col">
-				<div className="text-xl font-bold">
-					You need to be logged in to view the library.
-				</div>
-			</main>
-		);
-	}
-
 	if (movies.length > 0) {
 		movies[0] = { ...movies[0], isWatched: true, isLiked: true };
 	}
@@ -226,15 +181,24 @@ const index = () => {
 
 	return (
 		<main className="flex flex-1 justify-center items-center flex-col w-full my-10">
+			{error && (
+				<MsgCard
+					title="Error loading library"
+					message={error}
+					type="error"
+				/>
+			)}
+
 			<h1 className="text-4xl font-bold">Library</h1>
-			{/* <section className="container max-w-7xl px-4 flex flex-col w-full items-center xl:items-start gap-6">
-				<FilterSection onFilterChange={handleFilterChange} />
+			<section className="container max-w-7xl px-4 flex flex-col w-full items-center xl:items-start gap-6">
+				<Search />
+				{/* <FilterSection onFilterChange={handleFilterChange} />
 				<SortSection
 					sortUsers={handleSort}
 					sortBy={sortBy}
 					sortOrder={sortOrder}
-				/>
-			</section> */}
+				/> */}
+			</section>
 			<section className="container max-w-7xl pt-10 px-4 flex flex-row justify-between w-full items-center flex-grow">
 				<div className="flex flex-wrap md:justify-start justify-center gap-x-8 gap-y-10 w-full">
 					{/* No movies to load */}

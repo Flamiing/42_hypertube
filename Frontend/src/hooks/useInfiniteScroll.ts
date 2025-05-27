@@ -17,6 +17,7 @@ export function useInfiniteScroll<T>({
 	const [loading, setLoading] = useState(false);
 	const [initialLoad, setInitialLoad] = useState(true);
 	const loadingRef = useRef<HTMLDivElement | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
 	const loadMore = useCallback(async () => {
 		if (loading || !hasMore || !enabled) return;
@@ -31,7 +32,9 @@ export function useInfiniteScroll<T>({
 				setHasMore(false);
 			}
 		} catch (err) {
-			console.error("Failed to load data:", err);
+			const errorMessage =
+				err instanceof Error ? err.message : "Request failed";
+			setError(errorMessage);
 			setHasMore(false);
 		} finally {
 			setLoading(false);
@@ -83,6 +86,7 @@ export function useInfiniteScroll<T>({
 	return {
 		items,
 		loading,
+		error,
 		hasMore,
 		loadingRef,
 		initialLoad,
