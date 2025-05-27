@@ -37,6 +37,10 @@ export default class OAuthController {
         if (!data) return res;
 
         const validatedUser = await validatePartialUser(data);
+        if (!validatedUser.success) {
+            const errorMessage = validatedUser.error.errors[0].message;
+            return res.status(400).json({ msg: errorMessage });
+        }
         validatedUser.data.active_account = true;
         validatedUser.data.oauth = true;
 
