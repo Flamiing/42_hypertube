@@ -5,7 +5,6 @@ import { EditProfileData } from "../../services/api/profile";
 import calculateAge from "../../utils/calculateAge";
 import Spinner from "../../components/common/Spinner";
 import RegularButton from "../../components/common/RegularButton";
-import ISO6391 from "iso-639-1";
 
 interface BodyProps {
 	user: EditProfileData;
@@ -16,12 +15,11 @@ interface BodyProps {
 }
 
 const Body = ({ user, onChange, onSelectChange }: BodyProps) => {
-	const languages = ISO6391.getAllNames().map((name, index) => ({
-		value: ISO6391.getAllCodes()[index],
-		label: name,
-	}));
-
-	languages.sort((a, b) => a.label.localeCompare(b.label));
+	const languages = [
+		{ value: "es", label: "Spanish" },
+		{ value: "en", label: "English" },
+		{ value: "de", label: "German" },
+	];
 
 	return (
 		<section className="container max-w-4xl px-3 relative text-font-main pt-5">

@@ -1,5 +1,4 @@
 import capitalizeLetters from "../../utils/capitalizeLetters";
-import ISO6391 from "iso-639-1";
 
 interface UserData {
 	first_name: string;
@@ -24,6 +23,12 @@ const Info: React.FC<InfoProps> = ({ user }) => {
 			? "Male & Female"
 			: user.sexual_preference;
 
+	const languages = [
+		{ value: "es", label: "Spanish" },
+		{ value: "en", label: "English" },
+		{ value: "de", label: "German" },
+	];
+
 	return (
 		<section className="container max-w-4xl mx-auto pt-12 px-4 flex flex-col gap-6">
 			{user.prefered_language != null ? (
@@ -33,7 +38,9 @@ const Info: React.FC<InfoProps> = ({ user }) => {
 							Preferred language:
 						</p>
 						<p className="text-sm font-semibold">
-							{ISO6391.getName(user.prefered_language)}
+							{languages.find(
+								(lang) => lang.value === user.prefered_language
+							)?.label || "Unknown"}
 						</p>
 					</div>
 				</div>
