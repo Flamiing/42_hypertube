@@ -18,7 +18,7 @@ export default class TorrentClient {
 
     async streamTorrent() {
         const torrent = await this.#openTorrent();
-        
+
         const webSeeds = this.#getWebSeeds(torrent);
 
         if (webSeeds.length === 0) {
@@ -26,13 +26,20 @@ export default class TorrentClient {
             process.exit();
         }
 
-        this.#downloadPieceFromWebSeed(webSeeds[0], 0, torrent, (error, piece) => {
-            if (error)
-                return console.error('Failed to download piece:', error.message);
+        this.#downloadPieceFromWebSeed(
+            webSeeds[0],
+            0,
+            torrent,
+            (error, piece) => {
+                if (error)
+                    return console.error(
+                        'Failed to download piece:',
+                        error.message
+                    );
 
-            console.log('Downloaded first piece:', piece.length, 'bytes');
-        });
-        
+                console.log('Downloaded first piece:', piece.length, 'bytes');
+            }
+        );
     }
 
     async #downloadTorrentFile() {
@@ -71,7 +78,10 @@ export default class TorrentClient {
         await this.#downloadTorrentFile();
 
         try {
-            const torrent = bencode.decode(fsExtra.readFileSync(this.torrentFilePath), { decodeStrings: false });
+            const torrent = bencode.decode(
+                fsExtra.readFileSync(this.torrentFilePath),
+                { decodeStrings: false }
+            );
             return torrent;
         } catch (error) {
             console.error(
@@ -89,7 +99,7 @@ export default class TorrentClient {
 
     #getSize(torrent) {
         const { length, files } = torrent.info;
-        return length || files.map(f => f.length).reduce((a, b) => a + b, 0);
+        return length || files.map((f) => f.length).reduce((a, b) => a + b, 0);
     }
 
     #pieceLength(torrent) {
@@ -98,24 +108,24 @@ export default class TorrentClient {
 
     #getWebSeeds(torrent) {
         let urls = [];
-        
+
         if (torrent['url-list']) {
             if (Array.isArray(torrent['url-list'])) {
-            urls = torrent['url-list'].map(u => u.toString());
+                urls = torrent['url-list'].map((u) => u.toString());
             } else {
-            urls = [torrent['url-list'].toString()];
+                urls = [torrent['url-list'].toString()];
             }
         }
-        
+
         return urls;
     }
-      
+
     #downloadPieceFromWebSeed(webSeedUrl, pieceIndex, torrent, callback) {
         const pieceLength = this.#pieceLength(torrent);
         const totalSize = this.#getSize(torrent);
         const start = pieceIndex * pieceLength;
         const end = Math.min(start + pieceLength - 1, totalSize - 1);
-        
+
         const url = new URL(webSeedUrl);
         const options = {
             hostname: url.hostname,
@@ -123,28 +133,28 @@ export default class TorrentClient {
             path: url.pathname,
             method: 'GET',
             headers: {
-            Range: `bytes=${start}-${end}`
-            }
+                Range: `bytes=${start}-${end}`,
+            },
         };
-        
+
         const protocol = url.protocol === 'https:' ? https : http;
-        
-        const req = protocol.request(options, res => {
+
+        const req = protocol.request(options, (res) => {
             let data = [];
-            res.on('data', chunk => data.push(chunk));
+            res.on('data', (chunk) => data.push(chunk));
             res.on('end', () => {
-            const piece = Buffer.concat(data);
-            callback(null, piece);
+                const piece = Buffer.concat(data);
+                callback(null, piece);
             });
         });
-        
-        req.on('error', error => {
+
+        req.on('error', (error) => {
             callback(error);
         });
-        
+
         req.end();
     }
-    
+
     // Parse .torrent (bencode) DONE
     // Talk to trackers
     // Connect to peers (TCP handshake + bitfield messages)
