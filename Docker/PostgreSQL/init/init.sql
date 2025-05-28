@@ -26,6 +26,7 @@ CREATE TABLE images (
 
 CREATE TABLE movies (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    tmdb_id INT UNIQUE,
     title VARCHAR(55),
     year INT,
     genres VARCHAR[] DEFAULT '{}',

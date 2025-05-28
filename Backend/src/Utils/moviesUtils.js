@@ -38,6 +38,7 @@ export async function getMovieData(rawMovie, movieGenres) {
         );
 
         const movie = {
+            tmdb_id: movieData.id,
             title: movieData.original_title || 'N/A',
             year:
                 parseInt(rawMovie.year) ||

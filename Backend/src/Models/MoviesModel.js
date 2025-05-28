@@ -16,7 +16,6 @@ class MoviesModel extends Model {
         const result = getSearchValues(userQuery);
         const searchQueries = result.searchQueries;
         let values = result.values;
-        console.log('TEST: ', result);
         const fields = [
             'id',
             'title',
@@ -36,12 +35,27 @@ class MoviesModel extends Model {
             values: values,
         };
 
-        console.log('TEST QUERY:', query.text);
-
         try {
             const result = await this.db.query(query);
             if (result.rows.length === 0) return [];
             return result.rows;
+        } catch (error) {
+            console.error('Error making the query: ', error.message);
+            return null;
+        }
+    }
+
+    async isDuplicatedMovie(tmdbId) {
+        console.log()
+        const query = {
+            text: `SELECT * FROM ${this.table} WHERE tmdb_id = $1;`,
+            values: [tmdbId],
+        };
+
+        try {
+            const result = await this.db.query(query);
+            if (result.rows.length === 0) return false;
+            return true;
         } catch (error) {
             console.error('Error making the query: ', error.message);
             return null;
