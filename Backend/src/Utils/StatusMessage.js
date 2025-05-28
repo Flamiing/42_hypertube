@@ -142,4 +142,5 @@ export default class StatusMessage {
         'The specified OAuth provider is not supported. Please check the provider and try again.';
     static SEARCH_QUERY_REQUIRED = 'Search query is required.';
     static MOVIE_NOT_FOUND = 'Movie not found.';
+    static ERROR_GETTING_GENRES = 'There was a problem getting movie genres.';
 }

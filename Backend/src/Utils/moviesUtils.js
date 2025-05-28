@@ -108,3 +108,22 @@ export function getMoviesOrder(order) {
     if (orderedBy && !VALID_ORDERED_BY_FIELDS.includes(orderedBy)) return null;
     return orderedBy;
 }
+
+export async function getMovieGenres() {
+    const { TMDB_API_KEY } = process.env;
+    const TMDBGenresURL = `https://api.themoviedb.org/3/genre/movie/list?api_key=${TMDB_API_KEY}&language=en`;
+    const movieGenres = {};
+
+    try {
+        const tmdbResponse = await axios.get(TMDBGenresURL);
+
+        const genresData = tmdbResponse.data.genres;
+        for (const genreData of genresData) {
+            movieGenres[genreData.id] = genreData.name;
+        }
+        return movieGenres;
+    } catch (error) {
+        console.error('ERROR:', error);
+        return null;
+    }
+}

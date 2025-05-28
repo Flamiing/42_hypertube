@@ -2,6 +2,7 @@
 import StatusMessage from '../Utils/StatusMessage.js';
 import moviesModel from '../Models/MoviesModel.js';
 import likedMoviesModel from '../Models/LikedMoviesModel.js';
+import { getMovieGenres } from '../Utils/moviesUtils.js';
 
 export default class LibraryController {
     static async moviePage(req, res) {
@@ -22,5 +23,12 @@ export default class LibraryController {
         movie.isLiked = isLiked;
 
         return res.json({ msg: movie });
+    }
+
+    static async getGenres(req, res) {
+        const movieGenres = await getMovieGenres();
+        if (!movieGenres) return res.status(502).json({ msg: StatusMessage.ERROR_GETTING_GENRES })
+
+        return res.json({ msg: movieGenres })
     }
 }

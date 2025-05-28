@@ -17,10 +17,10 @@ export default class TorrentClient {
     }
 
     async streamTorrent() {
-        const torrent = await this.#parseTorrent();
+        const torrent = await this.#openTorrent();
 
-        this.#getPeers(torrent, (trackerResponse) => {
-            console.log(trackerResponse);
+        this.#getPeers(torrent, peers => {
+            console.log('Got peers:', peers);
         });
     }
 
@@ -56,14 +56,11 @@ export default class TorrentClient {
         }
     }
 
-    async #parseTorrent() {
+    async #openTorrent() {
         await this.#downloadTorrentFile();
 
         try {
-            const torrentFile = fsExtra.readFileSync(this.torrentFilePath);
-            const torrent = bencode.decode(torrentFile, {
-                decodeStrings: false,
-            });
+            const torrent = bencode.decode(fsExtra.readFileSync(this.torrentFilePath), { decodeStrings: false });
             return torrent;
         } catch (error) {
             console.error(
@@ -74,122 +71,73 @@ export default class TorrentClient {
         }
     }
 
+    #infoHash(torrent) {
+        const info = bencode.encode(torrent.info);
+        return crypto.createHash('sha1').update(info).digest();
+    }
+
+    #getSize(torrent) {
+        const { length, files } = torrent.info;
+        return length || files.map(f => f.length).reduce((a, b) => a + b, 0);
+    }
+
+    #pieceLength(torrent) {
+        return torrent.info['piece length'];
+    }
+
     #getPeers(torrent, callback) {
-        const trackers = Array.isArray(torrent.announce)
-            ? torrent.announce
-            : [torrent.announce];
-
-        // Add public trackers
-        const publicTrackers = [
-            'http://tracker.opentrackr.org:1337/announce',
-            'http://tracker.bt4g.com:2095/announce',
-            'http://open.acgnxtracker.com:80/announce',
-            'http://tracker2.dler.org:80/announce',
-            'http://t.nyaatracker.com:80/announce',
-            'http://tracker.edwardans.com:80/announce',
-            'https://tracker.imgoingto.icu:443/announce',
-            'https://t.quic.ws:443/announce',
-            'https://tracker.sloppyta.co:443/announce',
-            'https://opentracker.xyz:443/announce',
-        ];
-
-        const allTrackers = publicTrackers; //[...trackers, ...publicTrackers];
-
-        const infoEncoded = bencode.encode(torrent.info);
-        const infoHash = crypto.createHash('sha1').update(infoEncoded).digest();
-        const peerId = crypto.randomBytes(20);
+        const announceUrl = 'https://tracker.opentrackr.org:443/announce';//torrent.announce.toString();
+        const parsed = URL.parse(announceUrl);
+        const infoHash = this.#infoHash(torrent);
+        const peerId = this.#generateId();
         const port = 6881;
-
-        const totalLength =
-            torrent.info.length ||
-            (torrent.info.files?.reduce((sum, f) => sum + f.length, 0) ?? 0);
-
-        const queryParams =
-            `info_hash=${this.#percentEncode(infoHash)}` +
-            `&peer_id=${this.#percentEncode(peerId)}` +
-            `&port=${port}` +
-            `&uploaded=0&downloaded=0&left=${totalLength}` +
-            `&compact=1`;
-
-        for (const announce of allTrackers) {
-            try {
-                const announceURL = Buffer.isBuffer(announce)
-                    ? announce.toString('utf-8')
-                    : String(announce);
-
-                if (!announceURL.startsWith('http')) {
-                    console.warn(
-                        '[TRACKER] Skipping unsupported URL (likely UDP):',
-                        announceURL
-                    );
-                    continue;
-                }
-
-                const parsedURL = new URL(announceURL);
-                const isHttps = parsedURL.protocol === 'https:';
-                const requestLib = isHttps ? https : http;
-
-                const fullPath = `${parsedURL.pathname}?${queryParams}`;
-
-                const options = {
-                    hostname: parsedURL.hostname,
-                    port: parsedURL.port || (isHttps ? 443 : 80),
-                    path: fullPath,
-                    method: 'GET',
-                    timeout: 5000,
-                };
-
-                console.log(
-                    '[TRACKER] Requesting peers from:',
-                    `${parsedURL.hostname}${fullPath}`
-                );
-
-                const req = requestLib.request(options, (res) => {
-                    const chunks = [];
-
-                    res.on('data', (chunk) => chunks.push(chunk));
-                    res.on('end', () => {
-                        const response = Buffer.concat(chunks);
-                        try {
-                            const trackerResponse = bencode.decode(response);
-                            callback(trackerResponse);
-                        } catch (e) {
-                            console.error(
-                                '[TRACKER] Failed to decode response from',
-                                announceURL,
-                                ':',
-                                e.message
-                            );
-                        }
-                    });
-                });
-
-                req.on('error', (err) => {
-                    console.error(
-                        '[TRACKER] Request error from',
-                        announceURL,
-                        ':',
-                        err.message
-                    );
-                });
-
-                req.end();
-            } catch (e) {
-                console.error(
-                    '[TRACKER] Error handling tracker URL:',
-                    e.message
-                );
-            }
+    
+        const query = new URLSearchParams({
+            info_hash: infoHash.toString('binary'),
+            peer_id: peerId.toString('binary'),
+            port,
+            uploaded: 0,
+            downloaded: 0,
+            left: this.#getSize(torrent),
+            compact: 1
+        });
+    
+        const options = {
+            hostname: parsed.hostname,
+            port: parsed.port || 80,
+            path: `${parsed.path}?${query.toString()}`,
+            method: 'GET'
+        };
+    
+        const req = http.request(options, res => {
+            let response = [];
+            res.on('data', chunk => response.push(chunk));
+            res.on('end', () => {
+                const data = Buffer.concat(response);
+                const trackerResponse = require('bencode').decode(data);
+                const peers = parsePeers(trackerResponse.peers);
+                callback(peers);
+            });
+        });
+    
+        req.on('error', console.error);
+        req.end();
+    }
+      
+    #generateId() {
+        return Buffer.from('-JS0001-' + crypto.randomBytes(12).toString('hex').slice(0, 12));
+    }
+      
+    #parsePeers(peersBuffer) {
+        const peers = [];
+        for (let i = 0; i < peersBuffer.length; i += 6) {
+            const ip = peersBuffer.slice(i, i + 4).join('.');
+            const port = peersBuffer.readUInt16BE(i + 4);
+            peers.push({ ip, port });
         }
+        return peers;
     }
-
-    #percentEncode(buffer) {
-        return Array.from(
-            buffer,
-            (byte) => `%${byte.toString(16).padStart(2, '0')}`
-        ).join('');
-    }
-
+    
     // Parse .torrent (bencode) DONE
     // Talk to trackers
     // Connect to peers (TCP handshake + bitfield messages)
