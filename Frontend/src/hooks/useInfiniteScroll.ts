@@ -19,8 +19,16 @@ export function useInfiniteScroll<T>({
 	const loadingRef = useRef<HTMLDivElement | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
+	const resetItems = useCallback(() => {
+		setItems([]);
+		setPage(initialPage);
+		setHasMore(true);
+		setError(null);
+		setInitialLoad(true);
+	}, [initialPage]);
+
 	const loadMore = useCallback(async () => {
-		if (loading || !hasMore || !enabled) return;
+		if (loading || !hasMore || !enabled || error != null) return;
 		setLoading(true);
 
 		try {
@@ -40,7 +48,7 @@ export function useInfiniteScroll<T>({
 			setLoading(false);
 			if (initialLoad) setInitialLoad(false);
 		}
-	}, [loading, hasMore, page, fetchPage, enabled, initialLoad]);
+	}, [loading, hasMore, page, fetchPage, enabled, initialLoad, error]);
 
 	// Set up IntersectionObserver
 	useEffect(() => {
@@ -90,5 +98,6 @@ export function useInfiniteScroll<T>({
 		hasMore,
 		loadingRef,
 		initialLoad,
+		resetItems,
 	};
 }

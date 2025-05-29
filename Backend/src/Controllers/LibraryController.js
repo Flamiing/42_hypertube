@@ -10,7 +10,7 @@ export default class LibraryController {
         if (isNaN(page))
             return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
-        const movies = await moviesModel.searchMovies(page, 6, req.query);
+        const movies = await moviesModel.searchMovies(page, 8, req.query);
         if (!movies)
             return res
                 .status(500)
@@ -39,7 +39,7 @@ export default class LibraryController {
         ];
         const movies = await moviesModel.getPaginatedRecords(
             page,
-            6,
+            8,
             'popularity',
             'DESC',
             fields

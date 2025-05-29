@@ -1,7 +1,7 @@
 import React from "react";
 
 const SortButton = ({
-	sortUsers,
+	sortMovies,
 	criteria,
 	icon,
 	label,
@@ -9,14 +9,14 @@ const SortButton = ({
 	sortOrder,
 }) => (
 	<button
-		onClick={() => sortUsers(criteria)}
+		onClick={() => sortMovies(criteria)}
 		className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-300 
 		${sortBy === criteria ? "bg-pink-100 text-pink-800" : "hover:bg-gray-100"}`}
 	>
 		{icon}
 		<span>{label}</span>
 		{sortBy === criteria && (
-			<span className="ml-1">{sortOrder === "asc" ? "↑" : "↓"}</span>
+			<span className="ml-1">{sortOrder === "ASC" ? "↑" : "↓"}</span>
 		)}
 	</button>
 );
