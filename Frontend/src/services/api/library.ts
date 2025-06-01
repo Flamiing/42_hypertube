@@ -7,8 +7,14 @@ export const libraryApi = {
 	},
 
 	searchLibrary: async (page: number, params = {}): Promise<any> => {
+		console.log("____________________");
+		console.log("params", params);
+
+		const paramsString = new URLSearchParams(params).toString();
+		const queryString = paramsString ? `?${paramsString}` : "";
+
 		const response = await apiRequest(
-			`movies/search/${page}${params}`
+			`movies/search/${page}${queryString}`
 		);
 		return response;
 	},

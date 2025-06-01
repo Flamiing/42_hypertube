@@ -21,5 +21,21 @@ export const useLibrary = () => {
 		}
 	};
 
-	return { getLibrary, loading, error };
+	const searchLibrary = async (page: number, searchParams = {}) => {
+		setLoading(true);
+		setError(null);
+		try {
+			const data = await libraryApi.searchLibrary(page, searchParams);
+			return data.msg;
+		} catch (err) {
+			const errorMessage =
+				err instanceof Error ? err.message : "Request failed";
+			setError(errorMessage);
+			throw new Error(errorMessage);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return { getLibrary, searchLibrary, loading, error };
 };
