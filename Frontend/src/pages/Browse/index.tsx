@@ -15,14 +15,49 @@ import ISO6391 from "iso-639-1";
 const index = () => {
 	const { user } = useAuth();
 	const { profile } = useProfile(user?.id || "");
-	const { getLibrary, searchLibrary } = useLibrary();
+	const { getLibrary, searchLibrary, getGenres } = useLibrary();
 
 	const [searchType, setSearchType] = useState("title");
 	const [searchValue, setSearchValue] = useState("");
+	const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+	const [availableGenres, setAvailableGenres] = useState<string[]>([]);
+	const [loadingGenres, setLoadingGenres] = useState(false);
 	const [orderBy, setOrderBy] = useState("title");
 	const [orderType, setOrderType] = useState("asc");
 	const [isSearchMode, setIsSearchMode] = useState(false);
 	const [currentSearchParams, setCurrentSearchParams] = useState({});
+
+	useEffect(() => {
+		if (searchType === "genres" && availableGenres.length === 0) {
+			loadGenres();
+		}
+	}, [searchType]);
+
+	const loadGenres = async () => {
+		setLoadingGenres(true);
+		try {
+			const response = await getGenres();
+			let genres: string[] = [];
+
+			if (
+				response &&
+				typeof response === "object" &&
+				!Array.isArray(response)
+			) {
+				genres = Object.values(response);
+			} else if (Array.isArray(response)) {
+				genres = response;
+			}
+
+			console.log("Loaded genres:", genres);
+			setAvailableGenres(genres);
+		} catch (error) {
+			console.error("Failed to load genres:", error);
+			setAvailableGenres([]);
+		} finally {
+			setLoadingGenres(false);
+		}
+	};
 
 	const createFetchFunction = (searchParams = {}) => {
 		if (Object.keys(searchParams).length > 0) {
@@ -49,18 +84,39 @@ const index = () => {
 	}
 
 	const searchTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setSearchType(e.target.value);
+		const newSearchType = e.target.value;
+		setSearchType(newSearchType);
+
+		// Clear search data when changing search type
+		setSearchValue("");
+		setSelectedGenres([]);
+
+		if (isSearchMode) {
+			setIsSearchMode(false);
+			setCurrentSearchParams({});
+			resetItems();
+		}
 	};
 
 	const searchValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchValue(e.target.value);
 	};
 
+	const handleGenresChange = (genres: string[]) => {
+		setSelectedGenres(genres);
+	};
+
 	const handleSearchSubmit = (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
 
-		if (!searchValue.trim()) {
-			// If search is empty, return to normal library view
+		// Check if we have search criteria
+		const hasSearchCriteria =
+			searchType === "genres"
+				? selectedGenres.length > 0
+				: searchValue.trim();
+
+		if (!hasSearchCriteria) {
+			// If no search criteria, return to normal library view
 			setIsSearchMode(false);
 			setCurrentSearchParams({});
 			resetItems();
@@ -70,14 +126,10 @@ const index = () => {
 		let searchParams: any = {};
 
 		if (searchType === "genres") {
-			// For genres, split by comma and create array format
-			const genres = searchValue
-				.split(",")
-				.map((g) => g.trim())
-				.filter((g) => g);
-			searchParams = { "genres[]": genres };
+			// For genres, use the selected genres array
+			searchParams = { "genres[]": selectedGenres };
 		} else if (searchType === "language") {
-			// For language, language name to iso code
+			// For language, convert language name to ISO code
 			const isoCode = ISO6391.getCode(searchValue);
 			if (isoCode) {
 				searchParams.language = isoCode;
@@ -120,9 +172,13 @@ const index = () => {
 				<Search
 					searchType={searchType}
 					searchValue={searchValue}
+					selectedGenres={selectedGenres}
+					availableGenres={availableGenres}
 					searchTypeChange={searchTypeChange}
 					searchValueChange={searchValueChange}
+					onGenresChange={handleGenresChange}
 					onSearchSubmit={handleSearchSubmit}
+					loadingGenres={loadingGenres}
 				/>
 				{/* <FilterSection onFilterChange={handleFilterChange} />
 				<SortSection
@@ -137,7 +193,7 @@ const index = () => {
 					{movies.length === 0 && !loading && (
 						<h2 className="col-span-full text-center text-xl font-bold w-full">
 							{isSearchMode
-								? "No movies found matching your search. Try different keywords."
+								? "No movies found matching your search. Try different criteria."
 								: "There are no movies to show. Try changing your filters."}
 						</h2>
 					)}

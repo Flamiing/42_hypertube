@@ -13,7 +13,7 @@ export const useLibrary = () => {
 			return data.msg;
 		} catch (err) {
 			const errorMessage =
-				err instanceof Error ? err.message : "Request failed";
+				err instanceof Error ? err.message : "Failed to fetch library";
 			setError(errorMessage);
 			throw new Error(errorMessage);
 		} finally {
@@ -29,7 +29,7 @@ export const useLibrary = () => {
 			return data.msg;
 		} catch (err) {
 			const errorMessage =
-				err instanceof Error ? err.message : "Request failed";
+				err instanceof Error ? err.message : "Failed to search library";
 			setError(errorMessage);
 			throw new Error(errorMessage);
 		} finally {
@@ -37,5 +37,18 @@ export const useLibrary = () => {
 		}
 	};
 
-	return { getLibrary, searchLibrary, loading, error };
+	const getGenres = async () => {
+		setError(null);
+		try {
+			const data = await libraryApi.getGenres();
+			return data;
+		} catch (err) {
+			const errorMessage =
+				err instanceof Error ? err.message : "Failed to fetch genres";
+			setError(errorMessage);
+			throw new Error(errorMessage);
+		}
+	};
+
+	return { getLibrary, searchLibrary, getGenres, loading, error };
 };
