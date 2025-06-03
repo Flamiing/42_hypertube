@@ -4,7 +4,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useLibrary } from "../../hooks/PageData/useLibrary";
 import Spinner from "../../components/common/Spinner";
 import SortSection from "./SortSection";
-import FilterSection from "./FilterSection";
 import Search from "./Search";
 import calculateAge from "../../utils/calculateAge";
 import ThumbnailBox from "./ThumbnailBox";
@@ -23,7 +22,7 @@ const index = () => {
 	const [availableGenres, setAvailableGenres] = useState<string[]>([]);
 	const [loadingGenres, setLoadingGenres] = useState(false);
 	const [orderBy, setOrderBy] = useState("title");
-	const [orderType, setOrderType] = useState("asc");
+	const [orderType, setOrderType] = useState("ASC");
 	const [isSearchMode, setIsSearchMode] = useState(false);
 	const [currentSearchParams, setCurrentSearchParams] = useState({});
 
@@ -45,11 +44,9 @@ const index = () => {
 				!Array.isArray(response)
 			) {
 				genres = Object.values(response);
-			} else if (Array.isArray(response)) {
-				genres = response;
+			} else {
+				genres = [];
 			}
-
-			console.log("Loaded genres:", genres);
 			setAvailableGenres(genres);
 		} catch (error) {
 			console.error("Failed to load genres:", error);
@@ -60,10 +57,19 @@ const index = () => {
 	};
 
 	const createFetchFunction = (searchParams = {}) => {
-		if (Object.keys(searchParams).length > 0) {
-			return (page: number) => searchLibrary(page, searchParams);
+		const paramsToUse = isSearchMode
+			? {
+					...searchParams,
+					orderedBy: orderBy,
+					orderType: orderType,
+			  }
+			: searchParams;
+
+		if (!isSearchMode && Object.keys(searchParams).length === 0) {
+			return getLibrary;
 		}
-		return getLibrary;
+
+		return (page: number) => searchLibrary(page, paramsToUse);
 	};
 
 	const {
@@ -109,14 +115,12 @@ const index = () => {
 	const handleSearchSubmit = (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
 
-		// Check if we have search criteria
 		const hasSearchCriteria =
 			searchType === "genres"
 				? selectedGenres.length > 0
 				: searchValue.trim();
 
 		if (!hasSearchCriteria) {
-			// If no search criteria, return to normal library view
 			setIsSearchMode(false);
 			setCurrentSearchParams({});
 			resetItems();
@@ -126,15 +130,12 @@ const index = () => {
 		let searchParams: any = {};
 
 		if (searchType === "genres") {
-			// For genres, use the selected genres array
 			searchParams = { "genres[]": selectedGenres };
 		} else if (searchType === "language") {
-			// For language, convert language name to ISO code
 			const isoCode = ISO6391.getCode(searchValue);
 			if (isoCode) {
 				searchParams.language = isoCode;
 			} else {
-				// If invalid language, leave as is
 				searchParams.language = searchValue;
 			}
 		} else {
@@ -149,7 +150,17 @@ const index = () => {
 	const handleSort = (sortBy: string, sortOrder: string) => {
 		setOrderBy(sortBy);
 		setOrderType(sortOrder);
+
+		if (isSearchMode) {
+			resetItems();
+		}
 	};
+
+	useEffect(() => {
+		if (isSearchMode && (movies.length > 0 || !initialLoad)) {
+			resetItems();
+		}
+	}, [orderBy, orderType]);
 
 	useEffect(() => {
 		if (isSearchMode && Object.keys(currentSearchParams).length > 0) {
@@ -180,12 +191,13 @@ const index = () => {
 					onSearchSubmit={handleSearchSubmit}
 					loadingGenres={loadingGenres}
 				/>
-				{/* <FilterSection onFilterChange={handleFilterChange} />
-				<SortSection
-					sortUsers={handleSort}
-					sortBy={sortBy}
-					sortOrder={sortOrder}
-				/> */}
+				{isSearchMode && (
+					<SortSection
+						onSort={handleSort}
+						sortBy={orderBy}
+						sortOrder={orderType}
+					/>
+				)}
 			</section>
 			<section className="container max-w-7xl pt-10 px-4 flex flex-row justify-between w-full items-center flex-grow">
 				<div className="flex flex-wrap md:justify-start justify-center gap-x-8 gap-y-10 w-full">
