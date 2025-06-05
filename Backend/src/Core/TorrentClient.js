@@ -19,9 +19,27 @@ export default class TorrentClient {
     async streamTorrent() {
         const torrent = await this.#openTorrent();
 
-        this.#getPeers(torrent, peers => {
-            console.log('Got peers:', peers);
-        });
+        const webSeeds = this.#getWebSeeds(torrent);
+
+        if (webSeeds.length === 0) {
+            console.error('No web seeds found in this torrent');
+            process.exit();
+        }
+
+        this.#downloadPieceFromWebSeed(
+            webSeeds[0],
+            0,
+            torrent,
+            (error, piece) => {
+                if (error)
+                    return console.error(
+                        'Failed to download piece:',
+                        error.message
+                    );
+
+                console.log('Downloaded first piece:', piece.length, 'bytes');
+            }
+        );
     }
 
     async #downloadTorrentFile() {
@@ -60,7 +78,10 @@ export default class TorrentClient {
         await this.#downloadTorrentFile();
 
         try {
-            const torrent = bencode.decode(fsExtra.readFileSync(this.torrentFilePath), { decodeStrings: false });
+            const torrent = bencode.decode(
+                fsExtra.readFileSync(this.torrentFilePath),
+                { decodeStrings: false }
+            );
             return torrent;
         } catch (error) {
             console.error(
@@ -78,66 +99,62 @@ export default class TorrentClient {
 
     #getSize(torrent) {
         const { length, files } = torrent.info;
-        return length || files.map(f => f.length).reduce((a, b) => a + b, 0);
+        return length || files.map((f) => f.length).reduce((a, b) => a + b, 0);
     }
 
     #pieceLength(torrent) {
         return torrent.info['piece length'];
     }
 
-    #getPeers(torrent, callback) {
-        const announceUrl = 'https://tracker.opentrackr.org:443/announce';//torrent.announce.toString();
-        const parsed = URL.parse(announceUrl);
-        const infoHash = this.#infoHash(torrent);
-        const peerId = this.#generateId();
-        const port = 6881;
-    
-        const query = new URLSearchParams({
-            info_hash: infoHash.toString('binary'),
-            peer_id: peerId.toString('binary'),
-            port,
-            uploaded: 0,
-            downloaded: 0,
-            left: this.#getSize(torrent),
-            compact: 1
-        });
-    
+    #getWebSeeds(torrent) {
+        let urls = [];
+
+        if (torrent['url-list']) {
+            if (Array.isArray(torrent['url-list'])) {
+                urls = torrent['url-list'].map((u) => u.toString());
+            } else {
+                urls = [torrent['url-list'].toString()];
+            }
+        }
+
+        return urls;
+    }
+
+    #downloadPieceFromWebSeed(webSeedUrl, pieceIndex, torrent, callback) {
+        const pieceLength = this.#pieceLength(torrent);
+        const totalSize = this.#getSize(torrent);
+        const start = pieceIndex * pieceLength;
+        const end = Math.min(start + pieceLength - 1, totalSize - 1);
+
+        const url = new URL(webSeedUrl);
         const options = {
-            hostname: parsed.hostname,
-            port: parsed.port || 80,
-            path: `${parsed.path}?${query.toString()}`,
-            method: 'GET'
+            hostname: url.hostname,
+            port: url.port || (url.protocol === 'https:' ? 443 : 80),
+            path: url.pathname,
+            method: 'GET',
+            headers: {
+                Range: `bytes=${start}-${end}`,
+            },
         };
-    
-        const req = http.request(options, res => {
-            let response = [];
-            res.on('data', chunk => response.push(chunk));
+
+        const protocol = url.protocol === 'https:' ? https : http;
+
+        const req = protocol.request(options, (res) => {
+            let data = [];
+            res.on('data', (chunk) => data.push(chunk));
             res.on('end', () => {
-                const data = Buffer.concat(response);
-                const trackerResponse = require('bencode').decode(data);
-                const peers = parsePeers(trackerResponse.peers);
-                callback(peers);
+                const piece = Buffer.concat(data);
+                callback(null, piece);
             });
         });
-    
-        req.on('error', console.error);
+
+        req.on('error', (error) => {
+            callback(error);
+        });
+
         req.end();
     }
-      
-    #generateId() {
-        return Buffer.from('-JS0001-' + crypto.randomBytes(12).toString('hex').slice(0, 12));
-    }
-      
-    #parsePeers(peersBuffer) {
-        const peers = [];
-        for (let i = 0; i < peersBuffer.length; i += 6) {
-            const ip = peersBuffer.slice(i, i + 4).join('.');
-            const port = peersBuffer.readUInt16BE(i + 4);
-            peers.push({ ip, port });
-        }
-        return peers;
-    }
-    
+
     // Parse .torrent (bencode) DONE
     // Talk to trackers
     // Connect to peers (TCP handshake + bitfield messages)

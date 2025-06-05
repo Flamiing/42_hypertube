@@ -80,12 +80,26 @@ export function getSearchValues(userQuery) {
     let values = [];
     let searchQueries = '';
     for (const key in searches) {
-        const search = searches[key];
         if (searches[key]) {
-            values.push(`%${search}%`);
-            if (searchQueries) searchQueries += ' AND ';
-            const field = key != 'year' ? key : 'CAST(year AS TEXT)';
-            searchQueries += `${field} ILIKE $${values.length}`;
+            const search = searches[key];
+            if (key === 'genres' && Array.isArray(search)) {
+                let genreConditions = [];
+                for (const genre of search) {
+                    values.push(genre);
+                    genreConditions.push(`$${values.length} ILIKE ANY(genres)`);
+                }
+                if (searchQueries) searchQueries += ' AND ';
+                searchQueries += `(${genreConditions.join(' OR ')})`;
+            } else {
+                values.push(`%${search}%`);
+                if (searchQueries) searchQueries += ' AND ';
+                const field = key != 'year' ? key : 'CAST(year AS TEXT)';
+                const arrayOperator =
+                    key !== 'genres'
+                        ? `$${values.length}`
+                        : `ANY($${values.length})`;
+                searchQueries += `${field} ILIKE ${arrayOperator}`;
+            }
         }
     }
 
@@ -103,7 +117,6 @@ export function getMoviesOrder(order) {
         'rating',
         'popularity',
         'language',
-        'genres',
     ];
     const orderedBy = order ? order : 'title';
     if (orderedBy && !VALID_ORDERED_BY_FIELDS.includes(orderedBy)) return null;
@@ -127,4 +140,35 @@ export async function getMovieGenres() {
         console.error('ERROR:', error);
         return null;
     }
+}
+
+export function getOrderType(orderType) {
+    const VALID_ORDERS = ['ASC', 'DESC'];
+    if (!orderType) return 'DESC';
+    if (!VALID_ORDERS.includes(orderType)) return null;
+    return orderType;
+}
+
+export function invalidSearchQuery(query) {
+    const VALID_PARAMS = [
+        'title',
+        'year',
+        'language',
+        'genres',
+        'orderedBy',
+        'orderType',
+    ];
+
+    for (const key in query) {
+        if (!VALID_PARAMS.includes(key)) return true;
+        if (key === 'genres') {
+            if (!Array.isArray(query[key])) return true;
+        } else {
+            if (typeof query[key] !== 'string') return true;
+            if (key === 'orderType' && !getOrderType(query[key])) return true;
+            if (key === 'orderedBy' && !getMoviesOrder(query[key])) return true;
+        }
+    }
+
+    return false;
 }

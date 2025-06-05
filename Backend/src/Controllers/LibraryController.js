@@ -1,13 +1,19 @@
 // Local Imports:
 import StatusMessage from '../Utils/StatusMessage.js';
 import moviesModel from '../Models/MoviesModel.js';
-import { getWatchAndLikeStatus } from '../Utils/moviesUtils.js';
+import {
+    getWatchAndLikeStatus,
+    invalidSearchQuery,
+} from '../Utils/moviesUtils.js';
 
 export default class LibraryController {
     static async search(req, res) {
         const userId = req.session.user.id;
         const { page } = req.params;
         if (isNaN(page))
+            return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
+
+        if (invalidSearchQuery(req.query))
             return res.status(400).json({ msg: StatusMessage.BAD_REQUEST });
 
         const movies = await moviesModel.searchMovies(page, 8, req.query);

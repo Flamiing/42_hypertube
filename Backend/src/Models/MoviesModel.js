@@ -1,6 +1,10 @@
 // Local Imports:
 import Model from '../Core/Model.js';
-import { getSearchValues, getMoviesOrder } from '../Utils/moviesUtils.js';
+import {
+    getSearchValues,
+    getMoviesOrder,
+    getOrderType,
+} from '../Utils/moviesUtils.js';
 
 class MoviesModel extends Model {
     constructor() {
@@ -8,12 +12,12 @@ class MoviesModel extends Model {
     }
 
     async searchMovies(page, limit, userQuery) {
-        const searchPattern = `%${userQuery}%`;
         const offset = (page - 1) * limit;
         const orderedBy = getMoviesOrder(userQuery.orderedBy);
-        if (!orderedBy) return null;
+        const orderType = getOrderType(userQuery.orderType);
 
         const result = getSearchValues(userQuery);
+        console.log('TEST:', result);
         const searchQueries = result.searchQueries;
         let values = result.values;
         const fields = [
@@ -31,7 +35,7 @@ class MoviesModel extends Model {
         const offsetReference = `$${values.length}`;
 
         const query = {
-            text: `SELECT ${fields} FROM ${this.table} WHERE ${searchQueries} ORDER BY ${orderedBy} DESC LIMIT ${limit} OFFSET ${offsetReference};`,
+            text: `SELECT ${fields} FROM ${this.table} WHERE ${searchQueries} ORDER BY ${orderedBy} ${orderType} LIMIT ${limit} OFFSET ${offsetReference};`,
             values: values,
         };
 
