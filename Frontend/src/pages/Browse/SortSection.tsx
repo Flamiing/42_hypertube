@@ -1,41 +1,49 @@
 import React from "react";
 import SortButton from "./SortButton";
 
-const SortSection: React.FC = ({ sortUsers, sortBy, sortOrder }) => {
+const SortSection: React.FC = ({ onSort, sortBy, sortOrder }) => {
 	return (
 		<div className="w-full mb-8 flex md:justify-start justify-center">
 			<div className="flex space-x-4 justify-center flex-wrap border rounded-lg w-fit shadow-sm bg-background-main">
 				<SortButton
-					sortUsers={sortUsers}
-					criteria="fame"
-					icon={<span className="mr-2 text-lg ">🔥</span>}
-					label="Fame"
+					criteria="popularity"
+					icon={<span className="mr-2 text-lg">🔥</span>}
+					label="Popularity"
 					sortBy={sortBy}
 					sortOrder={sortOrder}
+					sortMovies={onSort}
 				/>
 				<SortButton
-					sortUsers={sortUsers}
-					criteria="age"
-					icon={<i className="fa fa-birthday-cake text-pink-500" />}
-					label="Age"
+					criteria="title"
+					icon={<i className="fa fa-font text-blue-500" />}
+					label="Title"
 					sortBy={sortBy}
 					sortOrder={sortOrder}
+					sortMovies={onSort}
 				/>
 				<SortButton
-					sortUsers={sortUsers}
-					criteria="location"
-					icon={<i className="fa fa-map-marker text-red-500" />}
-					label="Location"
+					criteria="year"
+					icon={<i className="fa fa-calendar text-green-500" />}
+					label="Year"
 					sortBy={sortBy}
 					sortOrder={sortOrder}
+					sortMovies={onSort}
 				/>
 				<SortButton
-					sortUsers={sortUsers}
-					criteria="tags"
-					icon={<i className="fa fa-tags text-blue-500" />}
-					label="Common Tags"
+					criteria="rating"
+					icon={<i className="fa fa-star text-yellow-500" />}
+					label="Rating"
 					sortBy={sortBy}
 					sortOrder={sortOrder}
+					sortMovies={onSort}
+				/>
+				<SortButton
+					criteria="language"
+					icon={<i className="fa fa-language text-purple-500" />}
+					label="Language"
+					sortBy={sortBy}
+					sortOrder={sortOrder}
+					sortMovies={onSort}
 				/>
 			</div>
 		</div>

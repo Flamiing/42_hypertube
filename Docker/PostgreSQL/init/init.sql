@@ -26,6 +26,7 @@ CREATE TABLE images (
 
 CREATE TABLE movies (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    tmdb_id INT UNIQUE,
     title VARCHAR(55),
     year INT,
     genres VARCHAR[] DEFAULT '{}',
@@ -34,7 +35,9 @@ CREATE TABLE movies (
     description VARCHAR(2048),
     language VARCHAR(2),
     popularity DOUBLE PRECISION,
-    torrent_url VARCHAR(2048)
+    torrent_url VARCHAR(2048),
+    file_name VARCHAR(512) DEFAULT NULL,
+    downloaded BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE watched_movies (

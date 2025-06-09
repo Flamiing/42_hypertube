@@ -8,7 +8,6 @@ export interface ProfileData {
 	age: number | null;
 	biography: string | null;
 	profile_picture: string;
-	location: string | null;
 	fame: number;
 	last_online: number;
 	is_online: bool;
@@ -29,7 +28,6 @@ export interface EditProfileData {
 	age: number | null;
 	biography: string | null;
 	profile_picture: string;
-	location: string | null;
 	fame: number;
 	last_online: number;
 	is_online: bool;
@@ -56,13 +54,6 @@ export const profileApi = {
 			body: JSON.stringify(userData),
 		});
 		return response;
-	},
-
-	editLocation: async (location): Promise => {
-		const response = await apiRequest(`users/location/update`, {
-			method: "PATCH",
-			body: JSON.stringify({ location }),
-		});
 	},
 
 	uploadProfilePicture: async (

@@ -2,11 +2,13 @@ import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import FormInput from "../../components/common/FormInput";
-import OauthButton from "../../components/common/Oauth42Button";
+import OauthGoogleButton from "../../components/common/oauthButtons/OauthGoogleButton";
+import Oauth42Button from "../../components/common/oauthButtons/Oauth42Button";
+import OauthGithubButton from "../../components/common/oauthButtons/OauthGithubButton";
+import OauthTwitchButton from "../../components/common/oauthButtons/OauthTwitchButton";
 import authApi from "../../services/api/auth";
 import MsgCard from "../../components/common/MsgCard";
 import RegularButton from "../../components/common/RegularButton";
-import getLocationNotAllowed from "../../services/geoLocation/notAllowed";
 
 const Form: React.FC = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,16 +38,7 @@ const Form: React.FC = () => {
 		setIsSubmitting(true);
 
 		try {
-			// Get location before submitting
-			const location = await getLocationNotAllowed();
-			const formDataWithLocation = {
-				...formData,
-				location,
-			};
-
-			const { success, message } = await authApi.register(
-				formDataWithLocation
-			);
+			const { success, message } = await authApi.register(formData);
 			if (success) {
 				setFormData({
 					username: "",
@@ -85,7 +78,21 @@ const Form: React.FC = () => {
 				onSubmit={submitForm}
 				className="bg-white shadow-md flex flex-col gap-8 p-10 rounded max-w-3xl items-center"
 			>
-				<OauthButton action="Register" disabled={isSubmitting} />
+				<div className="grid grid-cols-2 gap-4 w-full">
+					<Oauth42Button action="Register" disabled={isSubmitting} />
+					<OauthGithubButton
+						action="Register"
+						disabled={isSubmitting}
+					/>
+					<OauthGoogleButton
+						action="Register"
+						disabled={isSubmitting}
+					/>
+					<OauthTwitchButton
+						action="Register"
+						disabled={isSubmitting}
+					/>
+				</div>
 				<p>Or create your account and start meeting people</p>
 				<FormInput
 					name="username"

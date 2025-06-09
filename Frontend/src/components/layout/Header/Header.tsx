@@ -108,9 +108,9 @@ const Header: React.FC = () => {
 											Home
 										</button>
 									</Link>
-									<Link to="/browse">
+									<Link to="/library">
 										<button className="text-font-main font-medium btn whitespace-nowrap text-base px-6 py-2 rounded-full hover:bg-secondary-light transition-colors duration-300">
-											Browse
+											Library
 										</button>
 									</Link>
 									<Link to="/watch">
@@ -201,17 +201,14 @@ const Header: React.FC = () => {
 										</button>
 									</Link>
 									<Link
-										to="/browse"
+										to="/library"
 										onClick={handleLinkClick}
 									>
 										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
-											Browse
+											Library
 										</button>
 									</Link>
-									<Link
-										to="/watch"
-										onClick={handleLinkClick}
-									>
+									<Link to="/watch" onClick={handleLinkClick}>
 										<button className="w-full text-left px-4 py-3 rounded-lg hover:bg-primary-monochromatic transition-colors duration-300">
 											Video
 										</button>

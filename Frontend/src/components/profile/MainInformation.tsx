@@ -10,13 +10,9 @@ interface MainInformationProps {
 		last_name: string;
 		distance?: string;
 	};
-	distance?: number;
 }
 
-const MainInformation: React.FC<MainInformationProps> = ({
-	user,
-	distance,
-}) => {
+const MainInformation: React.FC<MainInformationProps> = ({ user }) => {
 	const [imageKey, setImageKey] = useState(Date.now()); // Add state for cache busting
 
 	return (
@@ -39,17 +35,6 @@ const MainInformation: React.FC<MainInformationProps> = ({
 							capitalizeLetters(user.last_name)}
 					</p>
 				</div>
-
-				{distance != null ? (
-					<div className="flex items-center justify-center">
-						<div className="flex items-center gap-1 text-font-main">
-							<i className="fa fa-map-marker font-semibold text-red-500" />
-							{distance < 1
-								? "<1 km away"
-								: Math.round(distance) + " km away"}
-						</div>
-					</div>
-				) : null}
 			</div>
 		</div>
 	);

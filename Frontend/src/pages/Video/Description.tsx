@@ -23,7 +23,7 @@ const Description: React.FC = ({ writers, stars }) => {
 						<p>Length: {"3h"}</p>
 					</div>
 					<div className="flex items-center flex-col px-2">
-						<p className="text-sm">IMDb rating</p>
+						<p className="text-sm">TMDb rating</p>
 						<p>
 							<span className="text-yellow-400 mr-1">★</span>
 							<span>{"8.3"}</span>

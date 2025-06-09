@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import FormInput from "../../components/common/FormInput";
 import MsgCard from "../../components/common/MsgCard";
-import OauthButton from "../../components/common/Oauth42Button";
+import OauthGoogleButton from "../../components/common/oauthButtons/OauthGoogleButton";
+import Oauth42Button from "../../components/common/oauthButtons/Oauth42Button";
+import OauthGithubButton from "../../components/common/oauthButtons/OauthGithubButton";
+import OauthTwitchButton from "../../components/common/oauthButtons/OauthTwitchButton";
 import { useAuth } from "../../context/AuthContext";
 import RegularButton from "../../components/common/RegularButton";
 import ResetPassword from "./ResetPassword";
@@ -72,7 +75,21 @@ const LoginForm: React.FC = () => {
 					onSubmit={submitForm}
 					className="flex gap-8 flex-col items-center"
 				>
-					<OauthButton action="Login" disabled={isSubmitting} />
+					<div className="grid grid-cols-2 gap-4 w-full">
+						<Oauth42Button action="Login" disabled={isSubmitting} />
+						<OauthGithubButton
+							action="Login"
+							disabled={isSubmitting}
+						/>
+						<OauthGoogleButton
+							action="Login"
+							disabled={isSubmitting}
+						/>
+						<OauthTwitchButton
+							action="Login"
+							disabled={isSubmitting}
+						/>
+					</div>
 					<p>Or enter your credentials to access your account</p>
 					<FormInput
 						name="username"
