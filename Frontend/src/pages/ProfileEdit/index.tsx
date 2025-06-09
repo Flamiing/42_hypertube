@@ -9,7 +9,6 @@ import MsgCard from "../../components/common/MsgCard";
 import { useEditProfile } from "../../hooks/PageData/useEditProfile";
 import { EditProfileData } from "../../services/api/profile";
 import PasswordChange from "./PasswordChange";
-import EditLocation from "./EditLocation";
 
 const index = () => {
 	const { user } = useAuth();

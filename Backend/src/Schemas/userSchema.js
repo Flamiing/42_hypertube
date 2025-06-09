@@ -136,7 +136,8 @@ const userSchema = z.object({
             invalid_type_error: 'Invalid biography.',
         })
         .max(500, 'Biography must be 500 characters or fewer.')
-        .optional(),
+        .optional()
+        .nullable(),
     prefered_language: z
         .string({
             invalid_type_error: 'Invalid language option.',

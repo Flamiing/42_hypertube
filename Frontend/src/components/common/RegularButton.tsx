@@ -25,8 +25,8 @@ const RegularButton = ({
 			}`}
 			onClick={callback}
 		>
-			{icon && <i className={`pr-2 ${icon}`} />}
-			{value}
+			{icon && <i className={`${value ? "pr-2" : null} ${icon}`} />}
+			{value ? value : null}
 		</button>
 	);
 };

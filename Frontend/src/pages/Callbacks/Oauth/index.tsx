@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import RegularButton from "../../../components/common/RegularButton";
-import getLocationNotAllowed from "../../../services/geoLocation/notAllowed";
 
 const index: React.FC = () => {
 	const { oauth } = useAuth();
@@ -16,6 +15,7 @@ const index: React.FC = () => {
 	useEffect(() => {
 		const authenticate = async () => {
 			const token = searchParams.get("code");
+			let provider = searchParams.get("provider");
 
 			if (!token) {
 				setPageMsg(
@@ -25,13 +25,18 @@ const index: React.FC = () => {
 				return;
 			}
 
+			if (!provider) {
+				provider = "42"; // Default to 42 if no provider is specified
+			}
+
+			if (!["github", "google", "twitch", "42"].includes(provider)) {
+				setPageMsg("Invalid provider. Please try to login again.");
+				setError("text-red-400");
+				return;
+			}
+
 			try {
-				const location = await getLocationNotAllowed();
-				const response = await oauth(token, {
-					latitude: location.latitude,
-					longitude: location.longitude,
-					allows_location: false,
-				});
+				const response = await oauth(token, provider);
 
 				if (response.success) {
 					setPageMsg("Authentication successful! Redirecting...");
