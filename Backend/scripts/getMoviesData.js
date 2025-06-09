@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { getPublicDomainTorrentsMovies } from './getPublicDomainTorrentsMovies.js';
 import { getArchiveMovies } from './getArchiveMovies.js';
-import { getMovieGenres } from '../src/Utils/moviesUtils.js'
+import { getMovieGenres } from '../src/Utils/moviesUtils.js';
 
 // Local Imports:
 import moviesModel from '../src/Models/MoviesModel.js';

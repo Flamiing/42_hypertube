@@ -63,9 +63,13 @@ async function saveMoviesData(moviesURLs, movieGenres) {
         const TMDBMovieData = await getMovieData(scrapedMovieData, movieGenres);
         if (!TMDBMovieData) continue;
 
-        const isDuplicatedMovie = await moviesModel.isDuplicatedMovie(TMDBMovieData.tmdb_id);
+        const isDuplicatedMovie = await moviesModel.isDuplicatedMovie(
+            TMDBMovieData.tmdb_id
+        );
         if (isDuplicatedMovie === null) {
-            console.error('There was a problem checking if movie is duplicated.')
+            console.error(
+                'There was a problem checking if movie is duplicated.'
+            );
             return null;
         }
         if (isDuplicatedMovie) continue;

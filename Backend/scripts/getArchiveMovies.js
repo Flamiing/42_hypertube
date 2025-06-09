@@ -13,14 +13,18 @@ export async function getArchiveMovies(movieGenres) {
         if (count > process.env.MOVIES_LIMIT) return;
         const TMDBMovieData = await getMovieData(rawMovie, movieGenres);
         if (!TMDBMovieData) continue;
-        
-        const isDuplicatedMovie = await moviesModel.isDuplicatedMovie(TMDBMovieData.tmdb_id);
+
+        const isDuplicatedMovie = await moviesModel.isDuplicatedMovie(
+            TMDBMovieData.tmdb_id
+        );
         if (isDuplicatedMovie === null) {
-            console.error('There was a problem checking if movie is duplicated.')
+            console.error(
+                'There was a problem checking if movie is duplicated.'
+            );
             return null;
         }
         if (isDuplicatedMovie) continue;
-        
+
         await moviesModel.create({ input: TMDBMovieData });
         console.info(`${TMDBMovieData.title} has been added to the DB.`);
         count += 1;

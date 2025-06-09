@@ -27,8 +27,11 @@ export default class LibraryController {
 
     static async getGenres(req, res) {
         const movieGenres = await getMovieGenres();
-        if (!movieGenres) return res.status(502).json({ msg: StatusMessage.ERROR_GETTING_GENRES })
+        if (!movieGenres)
+            return res
+                .status(502)
+                .json({ msg: StatusMessage.ERROR_GETTING_GENRES });
 
-        return res.json({ msg: movieGenres })
+        return res.json({ msg: movieGenres });
     }
 }

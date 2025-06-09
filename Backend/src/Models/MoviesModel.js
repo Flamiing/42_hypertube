@@ -50,7 +50,7 @@ class MoviesModel extends Model {
     }
 
     async isDuplicatedMovie(tmdbId) {
-        console.log()
+        console.log();
         const query = {
             text: `SELECT * FROM ${this.table} WHERE tmdb_id = $1;`,
             values: [tmdbId],
